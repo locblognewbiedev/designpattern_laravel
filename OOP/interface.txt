@@ -1,0 +1,79 @@
+=>thật chất interface sinh ra không phải để giải quyết vấn đề đa thừ kế
+
+
+
+
+Interface trong lập trình hướng đối tượng không phải sinh ra chỉ để giải quyết vấn đề đa thừa kế. Thực tế, mục đích chính của interface là để định nghĩa một tập hợp các phương thức mà một lớp phải thực hiện, cung cấp một cách để xác định các hành vi mà các đối tượng có thể thực hiện mà không cần phải quan tâm đến cách chúng được thực hiện. Dưới đây là một số mục đích chính của interface:
+
+1. Tạo ra một hợp đồng (contract) cho các lớp
+Interface định nghĩa một tập hợp các phương thức mà một lớp phải triển khai. Điều này tạo ra một hợp đồng mà các lớp phải tuân theo, đảm bảo rằng tất cả các lớp triển khai interface đều có cùng một bộ phương thức.
+
+php
+Sao chép mã
+interface Logger {
+    public function log($message);
+}
+
+class FileLogger implements Logger {
+    public function log($message) {
+        // Ghi log vào file
+    }
+}
+
+class DatabaseLogger implements Logger {
+    public function log($message) {
+        // Ghi log vào database
+    }
+}
+2. Hỗ trợ tính đa hình (polymorphism)
+Interface cho phép các đối tượng thuộc các lớp khác nhau có thể được xử lý theo cùng một cách thông qua interface của chúng. Điều này rất hữu ích khi viết mã tổng quát và linh hoạt.
+
+php
+Sao chép mã
+function logMessage(Logger $logger, $message) {
+    $logger->log($message);
+}
+
+$loggers = [new FileLogger(), new DatabaseLogger()];
+foreach ($loggers as $logger) {
+    logMessage($logger, "Test message");
+}
+3. Tách biệt sự trừu tượng (abstraction) và hiện thực (implementation)
+Interface cung cấp một lớp trừu tượng để tách biệt các khía cạnh giao diện của một hệ thống khỏi hiện thực cụ thể của nó. Điều này giúp mã dễ bảo trì và mở rộng hơn.
+
+php
+Sao chép mã
+interface PaymentGateway {
+    public function charge($amount);
+}
+
+class PaypalGateway implements PaymentGateway {
+    public function charge($amount) {
+        // Implement thanh toán qua Paypal
+    }
+}
+
+class StripeGateway implements PaymentGateway {
+    public function charge($amount) {
+        // Implement thanh toán qua Stripe
+    }
+}
+4. Khả năng mở rộng hệ thống
+Khi sử dụng interface, bạn có thể dễ dàng mở rộng hệ thống bằng cách thêm các lớp mới mà không cần thay đổi mã hiện có. Điều này giúp hệ thống dễ dàng mở rộng và bảo trì.
+
+php
+Sao chép mã
+class SquareGateway implements PaymentGateway {
+    public function charge($amount) {
+        // Implement thanh toán qua Square
+    }
+}
+
+// Không cần thay đổi mã hiện có
+$paymentGateway = new SquareGateway();
+$paymentGateway->charge(100);
+5. Tăng tính linh hoạt và khả năng tái sử dụng mã
+Interface giúp tăng tính linh hoạt và khả năng tái sử dụng mã bằng cách cho phép các lớp khác nhau thực hiện cùng một interface mà không bị ràng buộc bởi một cấu trúc kế thừa cụ thể.
+
+Kết luận
+Mục đích thực sự của interface là để định nghĩa một hợp đồng cho các lớp triển khai, hỗ trợ tính đa hình, tách biệt sự trừu tượng và hiện thực, khả năng mở rộng hệ thống, và tăng tính linh hoạt cũng như khả năng tái sử dụng mã. Điều này giúp xây dựng các hệ thống linh hoạt, dễ bảo trì và dễ mở rộng hơn.

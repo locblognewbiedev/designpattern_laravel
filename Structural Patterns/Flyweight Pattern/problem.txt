@@ -1,0 +1,14 @@
+bản chất nó sẽ tạo ra key dựa trên thuộc tính của các đối tượng và lưu
+key: đối tượng vào mảng để khi tạo đối tượng mới mà đã từng tạo rồi thì nó lấy đố yuowjng cũng
+cái này chắc hữu ích nhất đối với các trình soạn thảo văn bản tại vì mấy chữ này thường khác mỗi font với color
+
+Flyweight Pattern là một trong các design pattern thuộc nhóm Structural Patterns. Nó được thiết kế để giảm thiểu chi phí bộ nhớ bằng cách chia sẻ càng nhiều dữ liệu càng tốt giữa các đối tượng tương tự. Pattern này đặc biệt hữu ích khi bạn có một lượng lớn các đối tượng giống nhau hoặc tương tự mà mỗi đối tượng cần sử dụng một phần dữ liệu giống nhau.
+
+Giới Thiệu về Flyweight Pattern
+Mục Đích
+Giảm chi phí bộ nhớ: Bằng cách chia sẻ các phần dữ liệu chung giữa nhiều đối tượng.
+Tối ưu hóa hiệu suất: Tối ưu hóa việc quản lý và sử dụng bộ nhớ, đặc biệt trong các ứng dụng yêu cầu quản lý một số lượng lớn các đối tượng.
+Không có Flyweight Pattern: Các Vấn Đề Có Thể Gặp Phải
+Sử dụng nhiều bộ nhớ: Khi mỗi đối tượng lưu trữ các dữ liệu tương tự, điều này có thể dẫn đến tiêu tốn bộ nhớ không cần thiết.
+Hiệu suất thấp: Tốn nhiều thời gian và tài nguyên cho việc tạo và quản lý các đối tượng giống nhau.
+Bộ nhớ bị lãng phí: Do dữ liệu bị sao chép nhiều lần cho mỗi đối tượng, dẫn đến lãng phí bộ nhớ.

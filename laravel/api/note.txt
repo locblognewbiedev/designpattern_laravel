@@ -1,0 +1,61 @@
+
+xử lý request
+Lấy tham số từ route.
+$userId = $request->route('id');
+
+Lấy dữ liệu từ query string.
+$search = $request->query('search');
+
+ Lấy giá trị từ header.
+ $token = $request->header('Authorization');
+
+Lấy phương thức HTTP của request.
+$method = $request->method();
+
+
+Lấy Bearer token từ Authorization header.
+$token = $request->bearerToken();
+----------------------------------------
+
+json($data, $status = 200, $headers = [], $options = 0): Trả về response dạng JSON.
+return response()->json(['message' => 'Success'], 200);
+hoặc return response()->json(['message' => 'Created'])->setStatusCode(201);
+
+ Thêm một header vào response.
+ return response('Hello World')->header('Content-Type', 'text/plain');
+
+cookie($key, $value, $minutes = 0, $path = null, $domain = null, $secure = null, $httpOnly = true): Thêm một cookie vào response.
+return response('Hello World')->cookie('name', 'value', 60);
+
+
+Tải về một file.
+return response()->download($pathToFile);
+
+Trả về response không có nội dung
+return response()->noContent();
+
+
+Tạo một response với nội dung tùy ý.
+return response()->make('Content', 200);
+
+
+failedValidation(Validator $validator): Gọi khi xác thực thất bại.
+protected function failedValidation(Validator $validator)
+{
+    throw new HttpResponseException(response()->json($validator->errors(), 422));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

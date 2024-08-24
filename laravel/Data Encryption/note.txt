@@ -1,0 +1,148 @@
+Thông tin cá nhân của người dùng:
+Dữ liệu y tế:
+
+
+
+Các Bước Sử Dụng Data Encryption trong Laravel
+1. Cấu hình Encryption Key
+Trước khi sử dụng mã hóa, bạn cần cấu hình khóa mã hóa (APP_KEY) trong file .env:
+
+env
+Sao chép mã
+APP_KEY=base64:random_generated_key
+Bạn có thể tạo khóa mới bằng cách sử dụng lệnh Artisan:
+
+bash
+Sao chép mã
+php artisan key:generate
+Lệnh này sẽ tạo một khóa mã hóa ngẫu nhiên và cập nhật vào file .env.
+
+2. Mã hóa và Giải mã Dữ liệu
+Laravel cung cấp các phương thức đơn giản để mã hóa và giải mã dữ liệu thông qua facade Crypt.
+
+Mã hóa Dữ liệu
+php
+Sao chép mã
+use Illuminate\Support\Facades\Crypt;
+
+$encrypted = Crypt::encryptString('This is a secret message.');
+Giải mã Dữ liệu
+php
+Sao chép mã
+$decrypted = Crypt::decryptString($encrypted);
+Ví dụ Thực Tế: Mã hóa Dữ liệu Người Dùng
+Giả sử bạn có một ứng dụng lưu trữ thông tin nhạy cảm của người dùng như số an sinh xã hội (SSN). Bạn muốn mã hóa dữ liệu này trước khi lưu trữ vào cơ sở dữ liệu.
+
+1. Tạo Migration
+Tạo migration để thêm cột encrypted_ssn vào bảng users:
+
+bash
+Sao chép mã
+php artisan make:migration add_encrypted_ssn_to_users_table --table=users
+Sau đó, cập nhật file migration:
+
+php
+Sao chép mã
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class AddEncryptedSsnToUsersTable extends Migration
+{
+    public function up()
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->text('encrypted_ssn')->nullable();
+        });
+    }
+
+    public function down()
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('encrypted_ssn');
+        });
+    }
+}
+Chạy lệnh migrate:
+
+bash
+Sao chép mã
+php artisan migrate
+2. Cập nhật Model
+Trong model User, thêm thuộc tính encrypted_ssn vào $fillable:
+
+php
+Sao chép mã
+namespace App\Models;
+
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class User extends Authenticatable
+{
+    protected $fillable = [
+        'name', 'email', 'password', 'encrypted_ssn',
+    ];
+}
+3. Mã hóa SSN trước khi lưu
+Cập nhật controller để mã hóa SSN trước khi lưu vào cơ sở dữ liệu:
+
+php
+Sao chép mã
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+
+class UserController extends Controller
+{
+    public function store(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'ssn' => 'required|string|max:255',
+        ]);
+
+        // Mã hóa SSN
+        $encryptedSsn = Crypt::encryptString($request->ssn);
+
+        // Tạo người dùng mới
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'encrypted_ssn' => $encryptedSsn,
+        ]);
+
+        return response()->json(['message' => 'User created successfully'], 201);
+    }
+}
+4. Giải mã SSN khi cần thiết
+Cập nhật controller để giải mã SSN khi hiển thị thông tin người dùng:
+
+php
+Sao chép mã
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Support\Facades\Crypt;
+
+class UserController extends Controller
+{
+    public function show($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Giải mã SSN
+        $decryptedSsn = Crypt::decryptString($user->encrypted_ssn);
+
+        return response()->json([
+            'name' => $user->name,
+            'email' => $user->email,
+            'ssn' => $decryptedSsn,
+        ]);
+    }
+}

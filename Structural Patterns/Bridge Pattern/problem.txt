@@ -1,0 +1,37 @@
+Vấn đề mà Bridge Pattern giải quyết
+Khi bạn không sử dụng Bridge Pattern, bạn có thể gặp phải các vấn đề sau:
+
+Sự kết hợp chặt chẽ (Tight Coupling): Khi các lớp trừu tượng và hiện thực
+ của chúng được kết hợp chặt chẽ, việc thay đổi một phần có thể ảnh hưởng
+  đến phần khác, làm tăng độ phức tạp và khó bảo trì.
+
+Phình to của các lớp (Class Explosion): Nếu bạn cần tạo nhiều biến thể của
+ một đối tượng, bạn có thể kết thúc với rất nhiều lớp con, dẫn đến sự phình
+  to của các lớp.
+
+Khó mở rộng (Hard to Extend): Nếu bạn muốn thêm một chức năng hoặc thay đổi 
+hiện thực, bạn cần sửa đổi và kiểm tra nhiều lớp, làm tăng độ phức tạp 
+và khả năng xuất hiện lỗi.
+Bridge là một mẫu thiết kế cấu trúc cho phép bạn chia một lớp lớn hoặc 
+một tập hợp các "lớp có liên quan chặt chẽ" thành hai hệ thống phân cấp
+ riêng biệt—trừu tượng hóa và triển khai—có thể được phát triển độc lập
+  với nhau.
+=>các lớp phải liên quan nhau mới sử dụng được nhé
+
+
+theo mình hiểu nó sẽ tạo ra 1 lớp trừu tượng
+có 1 thuộc tính là cái mà mình muốn tạo ra và được truyền bằng constructor
+
+
+còn thằng client chỉ gọi thằng abstract được truyền vào thôi
+
+Một trong những hệ thống phân cấp này (thường được gọi là Abstraction) sẽ 
+nhận được tham chiếu đến một đối tượng của hệ thống phân cấp thứ hai
+ (Implementation). Abstraction sẽ có thể chuyển giao một số (đôi khi là
+  hầu hết) các lệnh gọi của nó đến đối tượng implementations.
+   Vì tất cả các implementations sẽ có một giao diện chung, 
+   chúng có thể hoán đổi cho nhau bên trong abstraction.
+=> cái nào là absstract cái nào là implementations là tùy thuộc vào việc
+mình chọn dựa trên tiêu chí cá nhân
+ví dụ mình tạo khối màu dựa vào absstract khối và tim màu
+hoặc mình dựa vào absstract màu và tim khối cũng được

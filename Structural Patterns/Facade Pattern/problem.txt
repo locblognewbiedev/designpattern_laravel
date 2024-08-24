@@ -1,0 +1,5 @@
+khi bạn có 1 chúc năng đặt hàng, chức năng này cần N chức năng con của N class
+để thực hiện bạn sẽ làm sao?
+khỏi tạo từng instance của từng class, gọi từng chức năng sau đó ?
+=> không chúng ta tạo ra 1 class có chức năng đặt hàng rồi tống cái đóng 
+logic đó vào, các attribute là các class cần

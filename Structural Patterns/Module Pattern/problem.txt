@@ -1,0 +1,113 @@
+=>bản chất là lôi các phương thức có họ hàng với nhau vào 1 class cho dễ quản lí
+vd: các class về con chó không nên được gọi trong class xe hơi được
+
+
+Module Pattern là một thiết kế phổ biến trong lập trình hướng đối tượng và lập trình chức năng, đặc biệt phổ biến trong các ngôn ngữ hỗ trợ đóng gói và ẩn thông tin. Mục đích chính của Module Pattern là cung cấp cấu trúc cho mã nguồn để giúp quản lý, tổ chức, và bảo vệ dữ liệu và hành vi của module. Dưới đây là một giải thích chi tiết về Module Pattern, các vấn đề có thể gặp phải nếu không sử dụng nó, và cách giải quyết các vấn đề đó qua một ví dụ bằng PHP.
+
+Giới Thiệu về Module Pattern
+Mục Đích
+Đóng gói dữ liệu và hành vi: Tổ chức mã nguồn thành các module riêng biệt, giúp giảm thiểu sự phụ thuộc và tăng khả năng bảo trì.
+Ẩn thông tin (Information Hiding): Chỉ phơi bày những thành phần cần thiết và ẩn các chi tiết triển khai bên trong.
+Tránh xung đột tên: Giảm thiểu khả năng xung đột tên giữa các thành phần khác nhau trong ứng dụng.
+Không có Module Pattern: Các Vấn Đề Có Thể Gặp Phải
+Phơi bày dữ liệu và hàm không cần thiết: Khi các biến và hàm toàn cục (global) được phơi bày, có thể dẫn đến việc sử dụng sai hoặc thay đổi không mong muốn.
+Xung đột tên: Các hàm hoặc biến toàn cục có thể xung đột với nhau nếu tên gọi trùng lặp.
+Khó bảo trì: Mã nguồn lớn và không có cấu trúc rõ ràng có thể trở nên khó hiểu và bảo trì.
+Cách Hoạt Động
+Module Pattern tổ chức mã nguồn thành các phần nhỏ, tự quản lý và độc lập. Mỗi module có thể cung cấp các giao diện công khai và giữ lại các chi tiết triển khai bên trong, chỉ phơi bày các thành phần cần thiết.
+
+Ví Dụ: Quản Lý Sản Phẩm với Module Pattern
+Dưới đây là ví dụ về quản lý sản phẩm, so sánh việc không sử dụng và sử dụng Module Pattern trong PHP.
+
+Không Sử Dụng Module Pattern
+Trong ví dụ này, chúng ta quản lý các sản phẩm trực tiếp mà không sử dụng module:
+
+php
+Sao chép mã
+<?php
+class Product {
+    public $name;
+    public $price;
+
+    public function __construct($name, $price) {
+        $this->name = $name;
+        $this->price = $price;
+    }
+}
+
+// Các hàm toàn cục (global) để thao tác với sản phẩm
+function createProduct($name, $price) {
+    return new Product($name, $price);
+}
+
+function displayProduct($product) {
+    echo "Product: {$product->name}, Price: {$product->price}\n";
+}
+
+$product = createProduct("Laptop", 1200);
+displayProduct($product);
+?>
+Vấn Đề:
+Phơi bày dữ liệu và hàm: Tất cả các hàm và dữ liệu đều có thể truy cập từ bên ngoài, không có sự kiểm soát.
+Xung đột tên: Có thể xảy ra xung đột nếu có hàm khác cũng tên là createProduct hoặc displayProduct.
+Thiếu đóng gói: Không có cấu trúc để quản lý các phần khác nhau của mã nguồn.
+Sử Dụng Module Pattern
+Trong ví dụ này, chúng ta sẽ cải thiện bằng cách sử dụng Module Pattern để quản lý các sản phẩm:
+
+php
+Sao chép mã
+<?php
+class ProductModule {
+    // Các thuộc tính và phương thức nội bộ (private)
+    private $products = [];
+
+    private function createProduct($name, $price) {
+        return new class($name, $price) {
+            public $name;
+            public $price;
+
+            public function __construct($name, $price) {
+                $this->name = $name;
+                $this->price = $price;
+            }
+        };
+    }
+
+    // Phương thức công khai để thêm sản phẩm
+    public function addProduct($name, $price) {
+        $product = $this->createProduct($name, $price);
+        $this->products[] = $product;
+    }
+
+    // Phương thức công khai để hiển thị các sản phẩm
+    public function displayProducts() {
+        foreach ($this->products as $product) {
+            echo "Product: {$product->name}, Price: {$product->price}\n";
+        }
+    }
+}
+
+$productModule = new ProductModule();
+$productModule->addProduct("Laptop", 1200);
+$productModule->addProduct("Smartphone", 800);
+$productModule->displayProducts();
+?>
+Lợi Ích:
+Đóng gói dữ liệu và hành vi: Dữ liệu và hành vi của module được đóng gói bên trong lớp ProductModule, giúp bảo vệ và quản lý tốt hơn.
+Ẩn thông tin: Các chi tiết tạo sản phẩm được ẩn trong các phương thức nội bộ, chỉ các phương thức công khai được phơi bày.
+Tránh xung đột tên: Giảm khả năng xung đột tên vì các hàm và thuộc tính được giới hạn trong phạm vi của module.
+Giải Thích Từng Dòng trong ProductModule
+private $products = [];:
+
+Khai báo một thuộc tính mảng để lưu trữ các đối tượng sản phẩm. Đây là thuộc tính nội bộ không thể truy cập trực tiếp từ bên ngoài.
+private function createProduct($name, $price) { ... }:
+
+Phương thức nội bộ để tạo đối tượng sản phẩm. Nó được giữ riêng tư để ngăn chặn truy cập trực tiếp từ bên ngoài module.
+public function addProduct($name, $price) { ... }:
+
+Phương thức công khai để thêm sản phẩm vào danh sách. Nó sử dụng createProduct để tạo đối tượng sản phẩm và sau đó thêm nó vào mảng products.
+public function displayProducts() { ... }:
+
+Phương thức công khai để hiển thị thông tin của tất cả các sản phẩm trong danh sách. Nó lặp qua mảng products và in ra thông tin từng sản phẩm.
+Kết Luận
+Module Pattern giúp tạo ra cấu trúc rõ ràng và có tổ chức cho mã nguồn. Bằng cách đóng gói các dữ liệu và hành vi liên quan trong các module riêng biệt, nó giúp tăng tính bảo mật, giảm thiểu khả năng xung đột tên, và dễ dàng bảo trì mã nguồn. Điều này đặc biệt quan trọng trong các dự án lớn hoặc khi làm việc với các nhóm phát triển lớn, nơi việc tổ chức và quản lý mã nguồn trở thành yếu tố then chốt để đảm bảo hiệu suất và hiệu quả của dự án.

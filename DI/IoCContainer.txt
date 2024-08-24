@@ -1,0 +1,179 @@
+IoC là một nguyên tắc trong lập trình hướng đối tượng mà ở đó,
+ điều khiển việc tạo và quản lý các đối tượng không được thực hiện trực 
+ tiếp bởi các lớp mà được giao cho một công cụ hoặc framework bên ngoài.
+  Điều này trái ngược với việc các lớp tự tạo và quản lý các phụ thuộc 
+  của chúng.
+
+Ví dụ về IoC
+Thay vì lớp UserService tự tạo đối tượng UserRepository, một IoC Container sẽ đảm nhận việc cung cấp một instance của UserRepository cho UserService.
+
+2. IoC Container Là Gì?
+IoC Container là một công cụ giúp quản lý sự phụ thuộc và tạo ra các đối tượng khi cần thiết. Nó có thể:
+
+Đăng ký và quản lý các dịch vụ hoặc lớp.
+Tạo các đối tượng và cung cấp các phụ thuộc tự động khi các đối tượng này được yêu cầu.
+Giúp thực hiện Dependency Injection (DI), một trong những hình thức phổ biến của IoC.
+3. Cách Hoạt Động của IoC Container
+Bước 1: Đăng ký Dịch vụ hoặc Lớp
+Bạn có thể đăng ký các lớp hoặc dịch vụ với IoC Container bằng cách chỉ định lớp trừu tượng (abstract class) hoặc giao diện (interface) mà bạn muốn quản lý và lớp cụ thể (concrete class) để khởi tạo.
+
+Bước 2: Giải quyết Phụ thuộc
+Khi cần một đối tượng của lớp đã đăng ký, IoC Container sẽ:
+
+Khởi tạo đối tượng đó.
+Tự động cung cấp các phụ thuộc bằng cách phân tích constructor của lớp và khởi tạo các phụ thuộc cần thiết.
+Bước 3: Cung cấp Đối tượng
+Container sẽ trả về đối tượng đã được khởi tạo với tất cả các phụ thuộc được cung cấp.
+
+4. Triển Khai IoC Container trong PHP
+Dưới đây là cách triển khai một IoC Container cơ bản:
+
+4.1. Container.php
+Container.php
+
+php
+Sao chép mã
+<?php
+
+namespace App;
+
+use ReflectionClass;
+use Exception;
+
+class Container {
+    private $bindings = [];
+    private $instances = [];
+
+    // Đăng ký một lớp hoặc dịch vụ
+    public function bind($abstract, $concrete) {
+        $this->bindings[$abstract] = $concrete;
+    }
+
+    // Đăng ký singleton
+    public function singleton($abstract, $concrete) {
+        $this->instances[$abstract] = $this->resolve($concrete);
+    }
+
+    // Tạo đối tượng từ abstract
+    public function make($abstract) {
+        if (isset($this->instances[$abstract])) {
+            return $this->instances[$abstract];
+        }
+
+        if (!isset($this->bindings[$abstract])) {
+            return $this->resolve($abstract);
+        }
+
+        return $this->resolve($this->bindings[$abstract]);
+    }
+
+    // Khởi tạo đối tượng cụ thể
+    private function resolve($concrete) {
+        $reflectionClass = new ReflectionClass($concrete);
+
+        if (!$reflectionClass->isInstantiable()) {
+            throw new Exception("Class $concrete is not instantiable.");
+        }
+
+        $constructor = $reflectionClass->getConstructor();
+
+        if (is_null($constructor)) {
+            return new $concrete;
+        }
+
+        $parameters = $constructor->getParameters();
+        $dependencies = [];
+
+        foreach ($parameters as $parameter) {
+            $dependency = $parameter->getType() && !$parameter->getType()->isBuiltin()
+                ? $parameter->getType()->getName()
+                : null;
+
+            if ($dependency) {
+                $dependencies[] = $this->make($dependency);
+            } else {
+                $dependencies[] = $parameter->isDefaultValueAvailable() 
+                    ? $parameter->getDefaultValue()
+                    : null;
+            }
+        }
+
+        return $reflectionClass->newInstanceArgs($dependencies);
+    }
+}
+?>
+4.2. Các Lớp Dịch Vụ
+UserRepository.php
+
+php
+Sao chép mã
+<?php
+
+namespace App;
+
+class UserRepository {
+    public function find($id) {
+        return "User data for user $id";
+    }
+}
+?>
+UserService.php
+
+php
+Sao chép mã
+<?php
+
+namespace App;
+
+class UserService {
+    private $userRepository;
+
+    // Sử dụng Dependency Injection để nhận UserRepository
+    public function __construct(UserRepository $userRepository) {
+        $this->userRepository = $userRepository;
+    }
+
+    public function getUserData($id) {
+        return $this->userRepository->find($id);
+    }
+}
+?>
+4.3. Sử Dụng IoC Container
+index.php
+
+php
+Sao chép mã
+<?php
+
+require_once 'Container.php';
+require_once 'UserRepository.php';
+require_once 'UserService.php';
+
+use App\Container;
+use App\UserRepository;
+use App\UserService;
+
+// Tạo container
+$container = new Container();
+
+// Đăng ký các dịch vụ
+$container->bind(UserRepository::class, UserRepository::class);
+$container->bind(UserService::class, UserService::class);
+
+// Lấy dịch vụ UserService từ container
+$userService = $container->make(UserService::class);
+
+// Sử dụng UserService
+echo $userService->getUserData(1); // Output: User data for user 1
+?>
+Giải thích:
+
+Container.php: Định nghĩa IoC Container với khả năng đăng ký và khởi tạo các lớp với các phụ thuộc.
+UserRepository.php và UserService.php: Các lớp dịch vụ có phụ thuộc.
+index.php: Sử dụng IoC Container để đăng ký và lấy các dịch vụ, sau đó sử dụng các dịch vụ này mà không cần quản lý phụ thuộc trực tiếp.
+5. Lợi Ích của IoC Container
+Giảm Sự Phụ Thuộc (Decoupling): Lớp không cần tự quản lý phụ thuộc của mình, giúp mã nguồn dễ kiểm thử và bảo trì hơn.
+Tăng Tính Linh Hoạt: Dễ dàng thay đổi cách các đối tượng được khởi tạo mà không cần thay đổi mã nguồn chính.
+Quản Lý Phụ Thuộc Tự Động: IoC Container tự động khởi tạo và cung cấp các phụ thuộc khi cần thiết.
+Kết Luận
+IoC Container là một công cụ mạnh mẽ trong PHP giúp quản lý sự phụ thuộc giữa các đối tượng, giảm sự phụ thuộc cứng nhắc, và tăng tính linh hoạt của ứng dụng. Bằng cách triển khai IoC Container, bạn có thể xây dựng các ứng dụng dễ bảo trì, dễ kiểm thử, và dễ mở rộng.

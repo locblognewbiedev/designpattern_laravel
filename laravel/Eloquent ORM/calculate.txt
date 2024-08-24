@@ -1,0 +1,5 @@
+Sử dụng count(), sum(), avg(), min(), max()
+
+$userCount = DB::table('users')->count();
+$totalOrders = DB::table('orders')->sum('amount');
+$averageAge = DB::table('users')->avg('age');

@@ -1,0 +1,1 @@
+dùng để gửi mail,thêm dl nó dạng như là 1 cách thay thế cho observer và job event thôi

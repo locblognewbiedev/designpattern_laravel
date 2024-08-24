@@ -1,0 +1,4 @@
+get(),first();
+
+$users = DB::table('users')->where('status', 'active')->get();
+$user = DB::table('users')->where('email', 'john.doe@example.com')->first();

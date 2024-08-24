@@ -1,0 +1,4 @@
+https://youtu.be/CJ_uUnjiKFM?si=ccIjZEWmfUC0V5TY
+7 cách cải thiện enum
+
+có thể dùng trực tiếp enum của laravel nhé khỏi tải thư viện

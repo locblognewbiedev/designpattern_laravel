@@ -1,0 +1,30 @@
+Nó cung cấp một đối tượng đại diện (proxy) để kiểm soát quyền truy cập đến một đối tượng khác (real subject). Điều này có thể hữu ích trong nhiều tình huống khác nhau, như kiểm soát truy cập, giảm tải, hoặc cung cấp một đối tượng giả lập thay thế cho đối tượng thực.
+
+Các loại Proxy:
+Remote Proxy: Kiểm soát truy cập đến một đối tượng từ xa. 
+Ví dụ, đối tượng thực nằm trên một server khác và proxy xử lý giao tiếp mạng.
+
+Virtual Proxy: Trì hoãn việc khởi tạo đối tượng thực đến khi thực sự cần. 
+Ví dụ, một hình ảnh lớn chỉ được tải khi cần hiển thị.
+
+Protection Proxy: Kiểm soát quyền truy cập đến đối tượng thực. 
+Ví dụ, kiểm tra quyền người dùng trước khi cho phép thực hiện hành động.
+
+Caching Proxy: Lưu trữ kết quả của các thao tác với đối tượng thực để
+ tránh thực hiện lại các tác vụ nặng nề.
+
+
+  Relations with Other Patterns
+With Adapter you access an existing object via different interface. With Proxy, the interface stays the same. With Decorator you access the object via an enhanced interface.
+
+Facade is similar to Proxy in that both buffer a complex entity and initialize it on its own. Unlike Facade, Proxy has the same interface as its service object, which makes them interchangeable.
+
+Decorator and Proxy have similar structures, but very different intents. Both patterns are built on the composition principle, where one object is supposed to delegate some of the work to another. The difference is that a Proxy usually manages the life cycle of its service object on its own, whereas the composition of Decorators is always controlled by the client.
+
+
+Mối quan hệ với các mẫu khác
+Với Adapter, bạn truy cập một đối tượng hiện có thông qua giao diện khác. Với Proxy , giao diện vẫn giữ nguyên. Với Decorator, bạn truy cập đối tượng thông qua giao diện nâng cao.
+
+Facade tương tự như Proxy ở chỗ vừa đệm một thực thể phức tạp vừa tự khởi tạo nó. Không giống như Facade , Proxy có giao diện giống với đối tượng dịch vụ của nó, khiến chúng có thể hoán đổi cho nhau.
+
+Decorator và Proxy có cấu trúc tương tự nhau nhưng mục đích rất khác nhau. Cả hai mẫu đều được xây dựng dựa trên nguyên tắc tổng hợp, trong đó một đối tượng có nhiệm vụ ủy thác một số công việc cho đối tượng khác. Sự khác biệt là Proxy thường tự quản lý vòng đời của đối tượng dịch vụ của nó, trong khi thành phần của Trình trang trí luôn do khách hàng kiểm soát.

@@ -1,0 +1,24 @@
+Multiton Pattern tương tự như Singleton Pattern nhưng khác biệt ở chỗ nó
+ quản lý nhiều thể hiện (instances) của một lớp dựa trên các khóa (keys), 
+ còn Singleton Pattern chỉ quản lý duy nhất một thể hiện.
+
+
+Vấn Đề Nếu Không Có Multiton Pattern:
+-Không kiểm soát được số lượng thể hiện:Một lớp có thể được khởi tạo nhiều lần, 
+dẫn đến việc tạo ra nhiều thể hiện không cần thiết và lãng phí tài nguyên,
+nhưng mỗi thể hiện có thể có cùng một key.
+-Quản lý nhiều thể hiện của cùng một lớp dựa trên các khóa (keys).
+-Cung cấp một cơ chế tiêu chuẩn để có thể truy cập và quản lý các thể 
+hiện dựa trên các điều kiện hoặc keys khác nhau.
+
+kiểu như nó kiểm soát 1(chỉ một thôi nhé nó đại loại như singleton nhưng có
+ đầu vào để tạo key) thể hiện có thuộc tính(keys) nào đó.
+
+Ví dụ Thực Tế
+Giả sử bạn đang phát triển một ứng dụng quản lý kết nối đến cơ sở dữ liệu,
+và bạn muốn có một cơ chế để quản lý nhiều kết nối đến các cơ sở dữ liệu 
+khác nhau dựa trên các key như tên người dùng. Multiton Pattern 
+có thể được áp dụng để quản lý các thể hiện của lớp kết nối cơ sở dữ liệu, 
+mỗi thể hiện được liên kết với một key duy nhất (ví dụ: tên người dùng).
+
+Học cho biết chứ nó không phổ biến(hoặc không ai xài :).

@@ -1,0 +1,1 @@
+nên tạo thêm 1 cột deleted(true, false) thay vì soft delete

@@ -1,0 +1,22 @@
+=> nhiều loại mà ít dùng=> làm biến học
+
+Eloquent:
+join(): Join cơ bản.
+leftJoin(): Left join.
+rightJoin(): Right join.
+crossJoin(): Cross join.
+joinSub(): Join với truy vấn con.
+leftJoinSub(): Left join với truy vấn con.
+hasManyThrough: Truy vấn thông qua nhiều bảng.
+morphToMany: Join đa hình.
+belongsToMany: Join nhiều-một-nhiều.
+join với điều kiện phức tạp: Join với điều kiện phức tạp.
+Query Builder:
+join(): Join cơ bản.
+leftJoin(): Left join.
+rightJoin(): Right join.
+crossJoin(): Cross join.
+joinSub(): Join với truy vấn con.
+leftJoinSub(): Left join với truy vấn con.
+join với điều kiện phức tạp: Join với điều kiện phức tạp.
+join nhiều bảng: Join nhiều bảng

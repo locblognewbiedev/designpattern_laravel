@@ -1,0 +1,4 @@
+Hãy giải thích cho tôi về ...,nếu không có ... thì tôi sẽ gặp những vấn đề gì?nó giải quyết được vấn đề gì? 
+lấy ví dụ bằng php
+
+cho tôi 3 ví dụ để thấy sự cần thiết của ... đi và nếu không sử dụng thì gặp phải những vấn đề gì

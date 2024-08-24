@@ -1,0 +1,35 @@
+các thao tác trên transaction
+
+
+use Illuminate\Support\Facades\DB;
+
+DB::beginTransaction();
+DB::commit();
+DB::rollBack();
+
+
+DB::savepoint($name)
+Tạo một savepoint trong giao dịch hiện tại. Savepoints cho phép bạn 
+rollback về một điểm cụ thể trong giao dịch mà không cần rollback 
+toàn bộ giao dịch.
+DB::savepoint('savepoint1');
+
+Rollback giao dịch về một savepoint cụ thể.
+DB::rollbackTo('savepoint1');
+
+---------------------------------------------
+nên sử dụng
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
+
+DB::transaction(function () {//tự bắt lỗi, tự rollback,tự commit
+    $user = User::create([
+        'name' => 'John Doe',
+        'email' => 'john@example.com',
+    ]);
+
+    $user->posts()->create([
+        'title' => 'My first post',
+        'body' => 'This is the content of my first post.',
+    ]);
+});

@@ -1,0 +1,102 @@
+### Tại sao phải sử dụng các Interface, Astract class mà không tạo trực tiếp class
+
+nếu không sử dụng interface
+class PaymentGateway {
+    public function processPayment($amount) {
+        echo "Processing payment of $amount.";
+    }
+}
+
+class OrderService {
+    private $paymentGateway;
+
+    public function __construct() {
+        $this->paymentGateway = new PaymentGateway();
+    }
+
+    public function placeOrder($amount) {
+        $this->paymentGateway->processPayment($amount);
+        echo "Order placed for $amount.";
+    }
+}
+
+$orderService = new OrderService();
+$orderService->placeOrder(100);
+
+-------------nếu sử dụng interface----------------------
+
+interface PaymentGatewayInterface {
+    public function processPayment($amount);
+}
+
+class StripePaymentGateway implements PaymentGatewayInterface {
+    public function processPayment($amount) {
+        echo "Processing payment of $amount via Stripe.";
+    }
+}
+
+class PayPalPaymentGateway implements PaymentGatewayInterface {
+    public function processPayment($amount) {
+        echo "Processing payment of $amount via PayPal.";
+    }
+}
+
+class OrderService {
+    private $paymentGateway;
+
+    public function __construct(PaymentGatewayInterface $paymentGateway) {
+        $this->paymentGateway = $paymentGateway;
+    }
+
+    public function placeOrder($amount) {
+        $this->paymentGateway->processPayment($amount);
+        echo "Order placed for $amount.";
+    }
+}
+
+// Inject the dependency
+$paymentGateway = new StripePaymentGateway();
+//làm tương tự với PayPal ta có thể nhận ra nó mở rộng các class có thể truyền vào
+//chỉ cần class đó implements interface là được thay vì ghi class cụ thể
+$orderService = new OrderService($paymentGateway);
+$orderService->placeOrder(100);
+
+
+
+### Container trong DI
+class Container {
+    private $bindings = [];
+
+    public function bind($abstract, $concrete) {
+        $this->bindings[$abstract] = $concrete;
+    }
+
+    public function make($abstract) {
+        if (isset($this->bindings[$abstract])) {
+            return new $this->bindings[$abstract]();
+        }
+        throw new Exception("No binding found for $abstract");
+    }
+}
+
+$container = new Container();
+
+// Use StripePaymentGateway
+$container->bind(PaymentGatewayInterface::class, StripePaymentGateway::class);
+$paymentGateway = $container->make(PaymentGatewayInterface::class);
+$orderService = new OrderService($paymentGateway);
+$orderService->placeOrder(100);
+
+// Switch to PayPalPaymentGateway
+$container->bind(PaymentGatewayInterface::class, PayPalPaymentGateway::class);
+$paymentGateway = $container->make(PaymentGatewayInterface::class);
+$orderService = new OrderService($paymentGateway);
+$orderService->placeOrder(200);
+
+Kết luận:
+    Tính linh hoạt: Bằng cách sử dụng interface (PaymentGatewayInterface), 
+    bạn có thể chuyển đổi giữa các PaymentGateway khác nhau một cách dễ dàng,
+    như StripePaymentGateway hoặc PayPalPaymentGateway, mà không cần thay đổi 
+    mã của OrderService.
+    Khả năng kiểm thử: Dễ dàng sử dụng phiên bản giả (mock) của PaymentGatewayInterface để kiểm thử OrderService.
+    Mở rộng: Có thể thêm các PaymentGateway khác trong tương lai và tích hợp chúng mà không cần thay đổi OrderService.

@@ -1,0 +1,43 @@
+Mẫu Prototype là một mẫu thiết kế trong lập trình hướng đối tượng (OOP)
+ nhằm giúp tối ưu hóa việc tạo đối tượng bằng cách sao chép một đối tượng
+  đã tồn tại thay vì tạo mới từ đầu. Điều này giúp giảm tải cho hệ thống 
+  khi việc tạo đối tượng mới có thể tốn nhiều tài nguyên, thời gian và 
+  chi phí.
+
+
+Vấn đề khi không sử dụng Prototype Pattern:
+Khi không sử dụng Prototype, việc tạo đối tượng có thể đòi hỏi phải khởi 
+tạo lại từng thuộc tính của đối tượng mỗi khi cần sử dụng.
+Điều này tốn tài nguyên và thời gian xử lý, đặc biệt là đối với các đối 
+tượng phức tạp.
+=> Sao chép cho nhanh.
+Khi cần nhiều đối tượng có cấu trúc tương tự nhau, việc sao chép thủ công 
+và khởi tạo lại từng phần tử sẽ dễ dẫn đến sai sót và làm giảm tính
+tái sử dụng của mã nguồn.
+Hiệu suất và chi phí của hệ thống:Việc tạo đối tượng mới thường cần phải
+khởi tạo và cấu hình lại các tài nguyên và thuộc tính, dẫn đến tăng
+chi phí và giảm hiệu suất của hệ thống khi có nhiều yêu cầu tạo đối tượng.
+
+
+=> cái lợi lớn nhất của nó chắc là khởi tạo đối tượng mà không cần truyền
+ tham số cho các nglt không cho phép overload constructor thành rỗng,
+ kiểu như làm biến truyền tham số khi tạo á
+
+
+không phải dị.Giả sử bạn có một đối tượng và bạn muốn tạo một bản sao 
+chính xác của đối tượng đó. Bạn sẽ làm như thế nào? Đầu tiên, bạn phải
+tạo một đối tượng mới cùng lớp. Sau đó, bạn phải duyệt qua tất cả các
+trường của đối tượng gốc và sao chép các giá trị của chúng sang đối tượng mới.
+Tuyệt! Nhưng có một điều cần lưu ý. Không phải tất cả các đối tượng đều 
+có thể được sao chép theo cách đó vì một số trường của đối tượng có thể 
+là riêng tư và không thể nhìn thấy từ bên ngoài đối tượng đó.
+
+Vì bạn phải biết lớp của đối tượng để tạo bản sao nên mã của bạn 
+sẽ phụ thuộc vào lớp đó. => phải mò lại tên class để xem á:))
+
+
+Nếu sự phụ thuộc thêm không làm bạn sợ hãi thì vẫn có một nhược điểm khác.
+ Đôi khi bạn chỉ biết giao diện mà đối tượng tuân theo chứ không biết lớp
+  cụ thể của nó, chẳng hạn khi một tham số trong một phương thức chấp nhận
+   bất kỳ đối tượng nào tuân theo giao diện nào đó.
+   =>kiểu trong interface có yêu cầu các class khác á

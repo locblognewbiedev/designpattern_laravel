@@ -1,0 +1,35 @@
+ Abstract Factory cung cấp một Interface để tạo ra một "HỌ"(cùng implement interface) 
+ các đối tượng có liên quan hoặc phụ thuộc lẫn nhau mà không cần chỉ rõ 
+ lớp cụ thể của từng đối tượng.
+
+Vấn đề Khi Không Có Abstract Factory Pattern
+
+-Sự Phụ Thuộc Giữa Các Lớp:
+Khi bạn cần khởi tạo các đối tượng liên quan hoặc phụ thuộc lẫn nhau,
+ bạn sẽ phải viết mã để khởi tạo từng đối tượng cụ thể.
+  Điều này tạo ra sự phụ thuộc giữa các lớp và làm cho mã nguồn trở
+ nên cứng nhắc.
+
+
+ -hiểu là abstract factory gôm nhóm việc tạo các đối tượng liên quan  
+ vào 1 abstract hoặc interface.còn factory thì tạo ra hàm để tạo đối tượng
+
+ -Các client chỉ cần làm việc với các interface hoặc abstract class,
+  không cần biết về các lớp cụ thể.
+xem problem2.php
+
+cách tiếp cận khác
+Hãy tưởng tượng rằng bạn đang tạo một trình mô phỏng cửa hàng nội thất.
+ Mã của bạn bao gồm các lớp đại diện cho:
+
+Một nhóm các sản phẩm liên quan, nói: Chair+ Sofa+ CoffeeTable.
+
+Một số biến thể của họ này. Ví dụ: sản phẩm Chair+ Sofa+ CoffeeTablecó 
+sẵn trong các biến thể sau: Modern, Victorian, ArtDeco.
+Bạn cần một cách để tạo ra các đồ nội thất riêng lẻ sao cho chúng phù hợp
+với các đồ vật khác cùng loại. Khách hàng sẽ rất tức giận khi nhận 
+được đồ nội thất không phù hợp.(kiểu muốn các đối tượng đồng dạng)
+Ngoài ra, bạn không muốn thay đổi mã hiện có khi thêm sản phẩm hoặc
+nhóm sản phẩm mới vào chương trình. Các nhà cung cấp đồ nội thất
+thường xuyên cập nhật danh mục của họ và bạn sẽ không muốn thay đổi
+mã cốt lõi mỗi lần như vậy.

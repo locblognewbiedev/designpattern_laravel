@@ -1,0 +1,33 @@
+Auth::attempt($credentials, $remember = false): Thử đăng nhập với thông tin xác thực.
+
+Auth::check()
+Auth::user();
+Auth::logout();
+Auth::viaRemember(): Kiểm tra xem người dùng có đăng nhập bằng remember token không.
+
+Gate::allows($ability, $arguments = []): Kiểm tra xem người dùng có quyền thực hiện hành động cụ thể.
+
+
+if (Gate::allows('edit-post', $post)) {
+    // Người dùng có quyền chỉnh sửa bài viết
+}
+Gate::denies($ability, $arguments = []): Kiểm tra xem người dùng không có quyền thực hiện hành động cụ thể.
+
+
+if (Gate::denies('edit-post', $post)) {
+    // Người dùng không có quyền chỉnh sửa bài viết
+}
+Gate::define($ability, callable $callback): Định nghĩa một quyền mới.
+
+
+Gate::define('edit-post', function ($user, $post) {
+    return $user->id === $post->user_id;
+});
+Gate::resource($name, $class, array $abilities = null): Đăng ký một chính sách resource.
+
+
+Gate::resource('posts', 'App\Policies\PostPolicy');
+Gate::policy($class, $policy): Đăng ký một chính sách cho một model.
+
+
+Gate::policy(Post::class, PostPolicy::class);

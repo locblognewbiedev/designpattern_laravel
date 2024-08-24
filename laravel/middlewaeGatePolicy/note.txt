@@ -1,0 +1,6 @@
+học này xong đủ dùng
+https://viblo.asia/p/tim-hieu-middleware-gate-policy-trong-laravel-GrLZDQQ3lk0
+
+
+nên nhớ nếu muốn sử dụng policy và gate thì phải có middleware nào đó thể xsc
+thực người dùng vd truyền token lên nếu không thì không sử udjng đc policy

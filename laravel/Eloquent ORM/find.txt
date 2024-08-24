@@ -1,0 +1,118 @@
+lấy tất cả $users = User::all();
+
+1. tìm theo id
+
+Book::find(id);
+
+2 tìm theo danh sách id 
+Book::find([danh sách id])//ít dùng
+
+3.tìm và trả về lỗi=> dùng nhiều Nhất
+
+$user = User::findOrFail(1);
+
+
+do các cách trên là tìm theo id nhưng mình muốn tìm dựa trên các cột khác thì
+$user = User::where('email', 'john.doe@example.com')->first();
+có thể thay ->frist()=get(),->firstOrFail()(có báo lỗi);
+
+Lấy tất cả các record phù hợp với điều kiện:
+$activeUsers = User::where('status', 'active')->get();
+Lấy bản ghi duy nhất phù hợp với điều kiện
+$user = User::where('email', 'john.doe@example.com')->sole();
+
+
+Sử dụng phương thức with() để eager load quan hệ,tránh truy vấn n+1
+$users = User::with('posts')->get(); nhớ khai báo quan hệ trong model
+
+
+Sử dụng chunk() để xử lý dữ liệu lớn theo từng phần=> dữ liệu siêu lớn cần 
+nhỏ khỏi
+User::chunk(100, function($users) {
+    foreach ($users as $user) {
+        // Xử lý từng user
+    }
+});
+
+Sử dụng paginate() để phân trang
+$users = User::paginate(15);
+
+Sử dụng cursor() để xử lý dữ liệu lớn theo kiểu lazy loading
+Duyệt qua các record bằng con trỏ, tiết kiệm bộ nhớ.
+foreach (User::cursor() as $user) {
+    // Xử lý từng user
+}//hình như bị chậm
+
+
+
+query builder 
+
+này ok hơn
+1. select 
+$users = DB::table('users')->select('name', 'email')->get();
+
+
+2. Sử dụng where()
+$users = DB::table('users')->where('status', 'active')->get();
+
+
+3. khi có 2 điều kiện Sử dụng orWhere()
+$users = DB::table('users')
+    ->where('status', 'active')
+    ->orWhere('role', 'admin')
+    ->get();
+
+4. khi tìm trong 1 danh sách các điều kiện
+$users = DB::table('users')->whereIn('id', [1, 2, 3])->get();
+
+
+5. tìm giữa 2 điều kiện
+$users = DB::table('users')
+    ->whereBetween('age', [18, 30])
+    ->get();
+
+6. tìm các dữ liệu có giá trị bị rỗng vd lấy các user chưa xác thực chẳng hạng
+$users = DB::table('users')->whereNull('email_verified_at')->get();
+
+
+7.tìm theo ngày tháng năm
+whereDate(), whereMonth(), whereYear()
+$users = DB::table('users')
+    ->whereDate('created_at', '2024-06-30')
+    ->get();
+
+
+8. Sử dụng join()
+$users = DB::table('users')
+    ->join('orders', 'users.id', '=', 'orders.user_id')
+    ->select('users.*', 'orders.order_date')
+    ->get();
+nên học thêm các loại join nữa
+
+9. Sử dụng groupBy() và having()
+$users = DB::table('users')
+    ->select(DB::raw('count(*) as user_count, status'))
+    ->groupBy('status')
+    ->having('user_count', '>', 10)
+    ->get();
+
+
+11. Sử dụng limit() và offset()
+Giới hạn số lượng record trả về và bỏ qua một số record đầu.
+$users = DB::table('users')
+    ->offset(10)
+    ->limit(5)
+    ->get();
+
+
+
+12. min(), max()
+$youngestAge = User::min('age');
+$oldestAge = User::max('age');
+
+
+13. Sử dụng withTrashed()
+Lấy cả các bản ghi đã bị xóa mềm.
+$users = User::withTrashed()->get();
+Sử dụng onlyTrashed()
+Chỉ lấy các bản ghi đã bị xóa mềm.

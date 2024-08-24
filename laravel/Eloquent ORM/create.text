@@ -1,0 +1,68 @@
+
+Để thêm 1 đối tượng
+
+1.
+tạo model của đối tượng và save();
+
+$book = new Book();
+$book->??? = ???
+$book->save()
+
+cách này có thể nói là cách nguyên thủy dễ bắt đầu nhất,nhưng một ngày nào đó 
+model thêm attribute cũng phải sửa nhiều chỗ nhất.
+
+2. 
+sử dụng create
+
+$book = Book::create(
+    [
+        'name'=>'harry potter'
+    ]
+)
+cách này thì tạo trên 1 dòng nhưng chúng ta phải xác định các field Để
+khởi tạo của model trong $fillable =[] và tên của các thuộc tính trong Form
+phải trùng với các cột trong bảng
+
+3. Sử dụng phương thức updateOrCreate();
+use case của cái này chắc là sẽ tạo ra các record duy Nhất
+kiểu như chưa có thì tạo, có thì update mà dữ liệu update thì như cũ chả khác nào 
+tạo ra các record unique
+
+4. Sử dụng phương thức firstOrCreate();
+hmmm use case của cái này là giả sử mình có 1 cái app quản lý thời gian đi
+khi mình thêm 1 nhắc nhở tại thời gian xx:xx nếu thời gian đó đã có 1 lời nhắc khác
+thì mình sẽ trả về lời nhắc đã có nếu không thì mình tạo mới.
+
+5. firstOrNew()
+tạo ra object nhưng ko gọi save()
+Giả sử bạn đang phát triển một hệ thống quản lý nhân viên trong một công ty. Bạn cần xử lý thông tin nhân viên dựa trên số chứng minh nhân dân (CMND) của họ. Nếu thông tin của một nhân viên đã tồn tại trong cơ sở dữ liệu, bạn chỉ cần cập nhật thông tin mới. Nếu không có, bạn sẽ tạo một bản ghi mới nhưng có thể cần thực hiện thêm một số kiểm tra hoặc xử lý trước khi lưu vào cơ sở dữ liệu.
+nói chung là nó khác firstOrCreate() ở chỗ nó cho mình chỉnh sửa
+
+6.
+$user =  new User()
+$user->fill([
+    'name' => 'John Doe',
+    'email' => 'john.doe@example.com'
+]);
+$user->save();
+
+query builder
+
+1. Sử dụng phương thức insert()
+
+DB::table('users')->insert([
+    'name' => 'John Doe',
+    'email' => 'john@example.com'
+]);
+
+Sử dụng phương thức insertGetId()
+Chèn một bản ghi và trả về ID của bản ghi vừa chèn.
+
+
+$id = DB::table('users')->insertGetId([
+    'name' => 'Jane Doe',
+    'email' => 'jane@example.com'
+]);
+
+=>kết luận nếu có fillable thì nên dùng create để ích sửa nhất
+

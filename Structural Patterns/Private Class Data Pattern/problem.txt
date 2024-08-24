@@ -1,0 +1,120 @@
+=> bản chất là thay vì để public thì ta để private và thêm các hàm getter, setter
+thì ra đây là lí do thêm getter và setter
+
+
+Private Class Data là một thiết kế pattern hướng đến việc bảo vệ dữ liệu nội bộ của một đối tượng. Nó giúp giảm thiểu khả năng thay đổi ngoài mong muốn của dữ liệu, tăng tính bảo mật và tính bất biến của dữ liệu. Dưới đây là giải thích chi tiết về pattern này, các vấn đề có thể gặp phải nếu không sử dụng nó, và cách giải quyết vấn đề thông qua một ví dụ bằng PHP.
+
+Giới Thiệu về Private Class Data Pattern
+Mục Đích
+Bảo vệ dữ liệu nội bộ: Giữ cho dữ liệu bên trong đối tượng không bị thay đổi trực tiếp từ bên ngoài.
+Tăng tính bất biến: Đảm bảo rằng dữ liệu chỉ có thể được thay đổi thông qua các phương thức rõ ràng, kiểm soát được.
+Giảm sự phơi bày dữ liệu: Ẩn chi tiết triển khai của đối tượng, làm cho các trường dữ liệu không thể truy cập trực tiếp.
+Không có Private Class Data Pattern: Các Vấn Đề Có Thể Gặp Phải
+Dữ liệu dễ bị thay đổi: Nếu dữ liệu có thể được truy cập và thay đổi trực tiếp từ bên ngoài, có thể dẫn đến lỗi và trạng thái không mong muốn.
+Khó kiểm soát: Khó kiểm soát hoặc xác minh các thay đổi dữ liệu khi chúng có thể được thay đổi từ bất kỳ đâu.
+Thiếu bảo mật: Dữ liệu nhạy cảm có thể bị lộ hoặc thay đổi không mong muốn.
+Cách Hoạt Động
+Private Class Data Pattern sử dụng một lớp nội bộ (hoặc thuộc tính riêng) để lưu trữ dữ liệu và cung cấp các phương thức để thao tác với dữ liệu đó, mà không phơi bày dữ liệu trực tiếp ra bên ngoài. Điều này giúp giảm khả năng thay đổi không mong muốn và tăng tính bảo mật.
+
+Ví Dụ: Thông Tin Nhân Viên với Private Class Data Pattern
+Không Sử Dụng Private Class Data
+Dưới đây là ví dụ về một lớp Employee nơi dữ liệu có thể được truy cập và thay đổi trực tiếp:
+
+php
+Sao chép mã
+<?php
+class Employee {
+    public $name;
+    public $salary;
+
+    public function __construct($name, $salary) {
+        $this->name = $name;
+        $this->salary = $salary;
+    }
+}
+
+$employee = new Employee("John Doe", 50000);
+
+// Truy cập và thay đổi trực tiếp thuộc tính
+echo $employee->name; // John Doe
+$employee->salary = 60000; // Thay đổi trực tiếp
+?>
+Vấn Đề:
+Dữ liệu name và salary có thể được thay đổi từ bên ngoài lớp, có thể dẫn đến trạng thái không mong muốn.
+Thiếu kiểm soát: Không có cách nào để kiểm soát hoặc xác thực các thay đổi này.
+Sử Dụng Private Class Data
+Trong ví dụ này, chúng ta sẽ cải thiện bảo mật và tính toàn vẹn của dữ liệu bằng cách sử dụng Private Class Data Pattern:
+
+php
+Sao chép mã
+<?php
+class EmployeeData {
+    private $name;
+    private $salary;
+
+    public function __construct($name, $salary) {
+        $this->name = $name;
+        $this->salary = $salary;
+    }
+
+    public function getName() {
+        return $this->name;
+    }
+
+    public function getSalary() {
+        return $this->salary;
+    }
+
+    public function setSalary($salary) {
+        if ($salary > 0) {
+            $this->salary = $salary;
+        } else {
+            throw new Exception("Invalid salary value");
+        }
+    }
+}
+
+class Employee {
+    private $employeeData;
+
+    public function __construct($name, $salary) {
+        $this->employeeData = new EmployeeData($name, $salary);
+    }
+
+    public function getName() {
+        return $this->employeeData->getName();
+    }
+
+    public function getSalary() {
+        return $this->employeeData->getSalary();
+    }
+
+    public function setSalary($salary) {
+        $this->employeeData->setSalary($salary);
+    }
+}
+
+$employee = new Employee("John Doe", 50000);
+
+// Truy cập qua phương thức getter
+echo $employee->getName(); // John Doe
+
+// Thay đổi qua phương thức setter
+$employee->setSalary(60000);
+echo $employee->getSalary(); // 60000
+
+// Sẽ ném ra một ngoại lệ nếu cố gắng đặt mức lương không hợp lệ
+try {
+    $employee->setSalary(-5000);
+} catch (Exception $e) {
+    echo $e->getMessage(); // Invalid salary value
+}
+?>
+Lợi Ích của Private Class Data
+Bảo vệ dữ liệu: Dữ liệu không thể được thay đổi trực tiếp từ bên ngoài, giúp giảm khả năng xảy ra lỗi.
+Kiểm soát truy cập: Truy cập vào dữ liệu thông qua các phương thức cụ thể, giúp dễ dàng kiểm soát và xác thực dữ liệu.
+Bảo mật: Bảo vệ dữ liệu nhạy cảm khỏi bị truy cập không mong muốn.
+Kết Luận
+Private Class Data Pattern giúp đảm bảo rằng dữ liệu của đối tượng chỉ có thể được truy cập và thay đổi thông qua các phương thức rõ ràng và được kiểm soát. Điều này làm tăng tính bảo mật, giảm thiểu lỗi và tăng cường tính toàn vẹn của dữ liệu, làm cho mã nguồn dễ bảo trì và an toàn hơn.
+
+Pattern này rất hữu ích trong các hệ thống cần đảm bảo tính nhất quán và bảo mật của dữ liệu, đặc biệt khi làm việc với dữ liệu nhạy cảm hoặc có giá trị cao.

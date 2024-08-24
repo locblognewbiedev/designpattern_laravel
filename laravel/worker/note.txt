@@ -1,0 +1,33 @@
+worker chính là thứ giúp ta thực hiện các tác vụ chạy nền
+Workers là các tiến trình (processes) chạy nền, xử lý các công việc như gửi
+email, xử lý hình ảnh, hoặc bất kỳ công việc nào có thể mất thời gian dài
+để hoàn thành. Sử dụng Workers giúp giảm tải cho ứng dụng chính và cải 
+thiện trải nghiệm người dùng.
+
+Cách thức hoạt động
+Laravel sử dụng các Queue để quản lý các công việc. Bạn có thể đẩy một công
+việc vào Queue và nó sẽ được xử lý bởi một Worker.
+
+
+để có thể sử dụng ta cần tạo job
+Job sẽ được tạo trong thư mục app/Jobs
+php artisan make:job SendEmail
+File Job sẽ được tạo trong thư mục app/Jobs. Bạn có thể thêm logic vào phương thức handle().
+
+Đẩy Job vào Queue:
+use App\Jobs\SendEmail;
+SendEmail::dispatch($emailData);
+
+
+Chạy Worker:
+Để chạy Worker, bạn sử dụng Artisan command:
+php artisan queue:work
+
+
+nhưng ta thg sẽ kết hợp job với obsserver hoặc event
+trong file obsserver:
+public function created(User $user)
+    {
+        // Đẩy công việc vào queue
+        SendWelcomeEmail::dispatch($user);
+    }

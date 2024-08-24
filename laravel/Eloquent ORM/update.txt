@@ -1,0 +1,33 @@
+3 cái sử dụng nhiều Nhất
+
+User::where('status', 'inactive')->update(['status' => 'active']);
+
+$user = User::find(1); // Tìm bản ghi với ID = 1
+$user->update([
+    'name' => 'John Doe',
+    'email' => 'john.doe@example.com'
+]);
+
+DB::table('users')
+    ->where('id', 1)
+    ->update(['name' => 'John Doe', 'email' => 'john.doe@example.com']);
+
+Eloquent:
+
+update()
+fill() + save()
+firstOrCreate()
+firstOrNew()
+---
+updateExistingPivot()
+Sử dụng updateExistingPivot() cho quan hệ nhiều-nhiều (many-to-many)
+Cập nhật dữ liệu trong bảng trung gian của mối quan hệ nhiều-nhiều.
+---
+
+Query Builder:
+
+update()
+increment(), decrement()
+updateOrInsert()
+upsert()
+join + update()

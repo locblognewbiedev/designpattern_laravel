@@ -1,0 +1,114 @@
+1:1 
+// Trong model User
+public function profile()
+{
+    return $this->hasOne(Profile::class);
+}
+
+// Trong model Profile
+public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
+-------------------------------------------------------------
+
+
+1:n 
+
+// Trong model User
+public function posts()
+{
+    return $this->hasMany(Post::class);
+    (hiểu là 1 user có nhiều post)
+}
+
+// Trong model Post
+public function user()
+{
+    return $this->belongsTo(User::class); (hiểu là nhiều post ăn theo 1 user)
+}
+
+
+-------------------------------------------------------------
+
+
+
+n:n
+// Trong model User
+public function roles()
+{
+    return $this->belongsToMany(Role::class);
+}
+
+// Trong model Role
+public function users()
+{
+    return $this->belongsToMany(User::class);
+}
+
+
+-------------------------------------------------------------
+
+
+mấy cái này mình chưa dùng bao giờ
+Has One Through (Một thông qua một):
+
+Quan hệ này cho phép bạn truy cập vào thông tin từ một bảng thông qua một bảng trung gian và sau đó đến bảng mục tiêu.
+Ví dụ: Mối quan hệ giữa Country và Post thông qua bảng trung gian User.
+php
+Sao chép mã
+// Trong model Country
+public function latestPost()
+{
+    return $this->hasOneThrough(Post::class, User::class);
+}
+Has Many Through (Nhiều thông qua một):
+
+Quan hệ này cho phép bạn truy cập vào danh sách các bản ghi từ một bảng thông qua một bảng trung gian và sau đó đến bảng mục tiêu.
+Ví dụ: Mối quan hệ giữa Country và Comment thông qua bảng trung gian Post.
+php
+Sao chép mã
+// Trong model Country
+public function allComments()
+{
+    return $this->hasManyThrough(Comment::class, Post::class);
+}
+Polymorphic Relations (Quan hệ đa hình):
+
+Cho phép một model có thể thuộc về nhiều model khác nhau trên một quan hệ duy nhất.
+Ví dụ: Mối quan hệ giữa Image và các model Post, User.
+php
+Sao chép mã
+// Trong model Image
+public function imageable()
+{
+    return $this->morphTo();
+}
+
+// Trong model Post hoặc User
+public function images()
+{
+    return $this->morphMany(Image::class, 'imageable');
+}
+One Through One/Many (Một thông qua một/nhiều):
+
+Quan hệ này cho phép bạn thiết lập một mối quan hệ gián tiếp qua nhiều bảng để truy xuất thông tin từ một bảng đích.
+Ví dụ: Mối quan hệ giữa User và Phone thông qua bảng trung gian Post.
+php
+Sao chép mã
+// Trong model User
+public function phone()
+{
+    return $this->hasOneThrough(Phone::class, Post::class);
+}
+Has One Or Many Through (Một hoặc nhiều thông qua một):
+
+Tương tự như hasOneThrough và hasManyThrough, nhưng cho phép bạn xác định nhiều bảng đích.
+php
+Sao chép mã
+// Trong model Country
+public function comments()
+{
+    return $this->hasOneOrManyThrough(Comment::class, [Post::class, User::class]);
+}

@@ -1,0 +1,11 @@
+Bước 1: Cấu hình Filesystem
+Mở file .env và đảm bảo cấu hình mặc định là local:
+
+env
+Sao chép mã
+FILESYSTEM_DRIVER=local
+
+Sử dụng phương thức store hoặc storeAs để lưu file được upload:
+ // Lưu file với tên gốc
+        $path = $request->file('file')->store('uploads');
+

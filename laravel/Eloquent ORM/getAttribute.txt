@@ -1,0 +1,123 @@
+Sử dụng pluck()
+Lấy một danh sách các giá trị từ một cột.
+$emails = DB::table('users')->pluck('email');
+
+
+Sử dụng value()
+Lấy giá trị của một cột từ record đầu tiên.
+$email = DB::table('users')->where('id', 1)->value('email');
+
+
+sử dụng accessor để decor value
+
+<?php
+ 
+namespace App\Models;
+ 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
+ 
+class User extends Model
+{
+    /**
+     * Get the user's first name.
+     */
+    protected function firstName(): Attribute
+    {
+        để lấy $user->first_name
+        return Attribute::make(
+            get: fn (string $value) => ucfirst($value),
+        );
+    }
+}
+--------------------------------------------------------
+tạo giá trị từ nhiều giá trị khác
+use App\Support\Address;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+ 
+/**
+ * Interact with the user's address.
+ */
+protected function address(): Attribute
+{
+    return Attribute::make(
+        get: fn (mixed $value, array $attributes) => new Address(
+            $attributes['address_line_one'],
+            $attributes['address_line_two'],
+        ),
+    );
+}
+------------------------------------------------------------
+
+vừa biến đổi giá trị đầu vào vừa biến đổi giá trị đầu ra=>mutator
+<?php
+ 
+namespace App\Models;
+ 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
+ 
+class User extends Model
+{
+    /**
+     * Interact with the user's first name.
+     */
+    protected function firstName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => ucfirst($value),
+            set: fn (string $value) => strtolower($value),
+        );
+    }
+}
+=> nên sủ dụng này thay vì accessor
+------------------------------------------------------------
+biến đổi dữ liệu=>cast 
+array
+AsStringable::class
+boolean
+collection
+date
+datetime
+immutable_date
+immutable_datetime
+decimal:<precision>
+double
+encrypted
+encrypted:array
+encrypted:collection
+encrypted:object
+float
+hashed
+integer
+object
+real
+string
+timestamp
+=> nói chung có cả đóng mà từ đây ta biết thêm các hàm xử lí chuỗi trong laravel nữa
+vd:use Illuminate\Support\Str;
+ 
+$slug = Str::slug('Laravel 5 Framework', '-');
+ 
+// laravel-5-framework
+-------------------------------------------------------------
+laravel scope 
+
+scope local nhớ đặt tiền tố là scope
+Lưu ý: Local scope bắt buộc phải return về một query builder.
+public function scopePopular($query)
+    {
+        return $query->where('votes', '>', 100);
+    }
+public function scopeActive($query)
+    {
+        return $query->where('active', 1);
+    }
+Lúc này bạn muốn sử dụng scope nào bạn chỉ cần gọi tên scope đó
+ (bỏ chữ "scope" và bắt đầu bằng kí tự in thường).
+ $users = User::popular()->active()->orderBy('created_at')->get();
+
+
+hoàn thiện
+Global scope.
+Anonymous globel scope.

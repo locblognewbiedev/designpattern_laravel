@@ -1,0 +1,139 @@
+=> bắt lỗi khi job thất bại
+
+
+Laravel hỗ trợ các sự kiện Queue để bạn có thể theo dõi và xử lý các trạng thái khác nhau của công việc (Job) trong Queue. Các sự kiện này bao gồm JobProcessing, JobProcessed, và JobFailed. Dưới đây là cách giải thích chi tiết và ví dụ thực tế về cách sử dụng các sự kiện này trong dịch vụ gửi email.
+
+1. JobProcessing
+Sự kiện JobProcessing được kích hoạt khi một Job bắt đầu được xử lý bởi Worker.
+
+Ví dụ:
+Giả sử bạn có một dịch vụ gửi email và muốn log lại thời điểm mỗi email bắt đầu được xử lý.
+
+Tạo Event Listener:
+
+bash
+Sao chép mã
+php artisan make:listener LogJobProcessing
+Listener:
+
+php
+Sao chép mã
+namespace App\Listeners;
+
+use Illuminate\Queue\Events\JobProcessing;
+
+class LogJobProcessing
+{
+    /**
+     * Handle the event.
+     *
+     * @param  JobProcessing  $event
+     * @return void
+     */
+    public function handle(JobProcessing $event)
+    {
+        \Log::info('Job is processing: ' . $event->job->getJobId());
+    }
+}
+Đăng ký Event Listener trong EventServiceProvider:
+
+php
+Sao chép mã
+use Illuminate\Queue\Events\JobProcessing;
+use App\Listeners\LogJobProcessing;
+
+protected $listen = [
+    JobProcessing::class => [
+        LogJobProcessing::class,
+    ],
+];
+2. JobProcessed
+Sự kiện JobProcessed được kích hoạt khi một Job đã được xử lý thành công.
+
+Ví dụ:
+Tiếp tục với dịch vụ gửi email, giả sử bạn muốn log lại thời điểm mỗi email được gửi thành công.
+
+Tạo Event Listener:
+
+bash
+Sao chép mã
+php artisan make:listener LogJobProcessed
+Listener:
+
+php
+Sao chép mã
+namespace App\Listeners;
+
+use Illuminate\Queue\Events\JobProcessed;
+
+class LogJobProcessed
+{
+    /**
+     * Handle the event.
+     *
+     * @param  JobProcessed  $event
+     * @return void
+     */
+    public function handle(JobProcessed $event)
+    {
+        \Log::info('Job has been processed: ' . $event->job->getJobId());
+    }
+}
+Đăng ký Event Listener trong EventServiceProvider:
+
+php
+Sao chép mã
+use Illuminate\Queue\Events\JobProcessed;
+use App\Listeners\LogJobProcessed;
+
+protected $listen = [
+    JobProcessed::class => [
+        LogJobProcessed::class,
+    ],
+];
+3. JobFailed
+Sự kiện JobFailed được kích hoạt khi một Job bị thất bại.
+
+Ví dụ:
+Bạn muốn log lại thông tin lỗi khi gửi email thất bại để có thể kiểm tra và khắc phục sau.
+
+Tạo Event Listener:
+
+bash
+Sao chép mã
+php artisan make:listener LogJobFailed
+Listener:
+
+php
+Sao chép mã
+namespace App\Listeners;
+
+use Illuminate\Queue\Events\JobFailed;
+
+class LogJobFailed
+{
+    /**
+     * Handle the event.
+     *
+     * @param  JobFailed  $event
+     * @return void
+     */
+    public function handle(JobFailed $event)
+    {
+        \Log::error('Job has failed: ' . $event->job->getJobId(), [
+            'exception' => $event->exception,
+        ]);
+    }
+}
+Đăng ký Event Listener trong EventServiceProvider:
+
+php
+Sao chép mã
+use Illuminate\Queue\Events\JobFailed;
+use App\Listeners\LogJobFailed;
+
+protected $listen = [
+    JobFailed::class => [
+        LogJobFailed::class,
+    ],
+];

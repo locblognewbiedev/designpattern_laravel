@@ -1,0 +1,248 @@
+cách thông báo lỗi cho fe 
+
+class UserController extends Controller
+{
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        // Logic xử lý khi dữ liệu hợp lệ
+        // ...
+
+        return response()->json(['message' => 'User created successfully'], 201);
+    }
+}
+
+
+
+----------------------------------------------
+cách 1
+public function store(Request $request): RedirectResponse
+{
+    $validated = $request->validate([
+        'title' => 'required|unique:posts|max:255',
+        'body' => 'required',
+    ]);
+ 
+    // The blog post is valid...
+ 
+    return redirect('/posts');
+}
+$validatedData = $request->validate([
+    'title' => ['required', 'unique:posts', 'max:255'],
+    'body' => ['required'],
+]);
+
+hiển thị lỗi
+ 
+<h1>Create Post</h1>
+ 
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+---------------------------
+cách 2 nên dùng
+tạo biểu mẫu
+php artisan make:request StorePostRequest
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreRequest extends FormRequest
+{
+    // Phương thức này xác định người dùng có quyền thực hiện yêu cầu hay không
+    public function authorize()
+    {
+        return true;
+    }
+
+    // Phương thức này chứa các quy tắc xác thực
+    public function rules()
+    {
+        return [
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+        ];
+    }
+
+    // Phương thức này chứa các thông báo lỗi tùy chỉnh
+    public function messages()
+    {
+        return [
+            'name.required' => 'The name field is required.',
+            'name.max' => 'The name may not be greater than :max characters.',
+            'email.required' => 'We need to know your email address!',
+            'email.email' => 'Please provide a valid email address!',
+            'email.unique' => 'This email address is already taken.',
+            'password.required' => 'A password is required.',
+            'password.min' => 'The password must be at least :min characters.',
+            'password.confirmed' => 'The password confirmation does not match.',
+        ];
+    }
+    Tùy chỉnh tên của các thuộc tính.
+    public function attributes()
+{
+    return [
+        'email' => 'email address',
+    ];
+}
+có phương thức failedvalidation và trả về 422 lỗi validate
+failedAuthorization(): Gọi khi xác thực quyền thất bại.
+
+php
+Sao chép mã
+protected function failedAuthorization()
+{
+    throw new AuthorizationException('This action is unauthorized.');
+}
+}// custorm thông báo
+
+sử dụng trong controller
+public function store(StoreRequest $request)
+    {
+        // Xử lý dữ liệu đã được xác thực
+        $validatedData = $request->validated();
+
+        // Lưu dữ liệu hoặc thực hiện các hành động khác
+    }
+Dừng lại khi lỗi xác thực đầu tiên xảy ra
+protected $stopOnFirstFailure = true; thấy cũng không nên dùng lắm
+cái hàm này thấy ok nè thay vì true như a nnl dạy
+use App\Models\Comment;
+ 
+/**
+ * Determine if the user is authorized to make this request.
+ */
+public function authorize(): bool
+{
+    $comment = Comment::find($this->route('comment'));
+ 
+    return $comment && $this->user()->can('update', $comment);
+}
+
+có thể thêm đa ngôn ngữ để thông báo lỗi cho ít code lại kiểu như email,pas nè,...
+Available Validation Rules
+https://laravel.com/docs/11.x/validation#validation-error-response-format
+Below is a list of all available validation rules and their function:
+
+Accepted
+Accepted If
+Active URL
+After (Date)
+After Or Equal (Date)
+Alpha
+Alpha Dash
+Alpha Numeric
+Array
+Ascii
+Bail
+Before (Date)
+Before Or Equal (Date)
+Between
+Boolean
+Confirmed
+Contains
+Current Password
+Date
+Date Equals
+Date Format
+Decimal
+Declined
+Declined If
+Different
+Digits
+Digits Between
+Dimensions (Image Files)
+Distinct
+Doesnt Start With
+Doesnt End With
+Email
+Ends With
+Enum
+Exclude
+Exclude If
+Exclude Unless
+Exclude With
+Exclude Without
+Exists (Database)
+Extensions
+File
+Filled
+Greater Than
+Greater Than Or Equal
+Hex Color
+Image (File)
+In
+In Array
+Integer
+IP Address
+JSON
+Less Than
+Less Than Or Equal
+List
+Lowercase
+MAC Address
+Max
+Max Digits
+MIME Types
+MIME Type By File Extension
+Min
+Min Digits
+Missing
+Missing If
+Missing Unless
+Missing With
+Missing With All
+Multiple Of
+Not In
+Not Regex
+Nullable
+Numeric
+Present
+Present If
+Present Unless
+Present With
+Present With All
+Prohibited
+Prohibited If
+Prohibited Unless
+Prohibits
+Regular Expression
+Required
+Required If
+Required If Accepted
+Required If Declined
+Required Unless
+Required With
+Required With All
+Required Without
+Required Without All
+Required Array Keys
+Same
+Size
+Sometimes
+Starts With
+String
+Timezone
+Unique (Database)
+Uppercase
+URL
+ULID
+UUID
+
+ngoài ra còn safe()-> nữa mà thấy không quan trộng nrrn thôi

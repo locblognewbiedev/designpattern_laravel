@@ -1,0 +1,66 @@
+dựa trên id
+Sử dụng destroy()
+User::destroy(1); // Xóa bản ghi có ID là 1
+
+User::destroy([1, 2, 3]); // Xóa các bản ghi có ID là 1, 2, 3
+
+---------------------------------------------------------
+dựa trên các điều kiện khác
+Sử dụng delete()
+Xóa một hoặc nhiều bản ghi khớp với điều kiện.
+// Xóa một bản ghi
+$user = User::find(1);
+$user->delete();
+
+// Xóa nhiều bản ghi
+User::where('status', 'inactive')->delete();
+---------------------------------------------------------
+
+
+xóa trên collection
+Sử dụng delete() trên Collection
+Xóa các bản ghi từ một Collection.
+
+$users = User::where('status', 'inactive')->get();
+$users->each->delete(); // Xóa từng bản ghi trong Collection
+---------------------------------------------------------
+
+xóa toàn bộ bảng
+Xóa tất cả các bản ghi trong bảng (không sử dụng Soft Delete).
+User::truncate();
+---------------------------------------------------------
+
+
+xóa tạm
+Chuyển bản ghi vào thùng rác thay vì xóa hẳn. Điều này yêu cầu sử dụng đặc điểm SoftDeletes trong model.
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class User extends Model
+{
+    use SoftDeletes;
+}
+
+// Xóa mềm một bản ghi
+$user = User::find(1);
+$user->delete(); // Thực hiện xóa mềm
+---------------------------------------------------------
+
+// Lấy các bản ghi đã bị xóa mềm
+$trashedUsers = User::onlyTrashed()->get();
+//chắc này dùng để tạo hiệu ứng giả là bị xóa, có j backup lại nè
+
+Sử dụng withTrashed()
+Lấy cả các bản ghi đã bị xóa mềm và xóa chúng vĩnh viễn hoặc khôi phục.
+// Xóa vĩnh viễn bản ghi đã bị xóa mềm
+User::withTrashed()->find(1)->forceDelete();
+
+// Khôi phục bản ghi đã bị xóa mềm
+User::withTrashed()->find(1)->restore();
+-------------------------------------------------
+Query Builder:
+delete(): Xóa một hoặc nhiều bản ghi.
+truncate(): Xóa tất cả bản ghi trong bảng.
+forceDelete(): Xóa vĩnh viễn bản ghi (áp dụng với Soft Delete).
+delete() với điều kiện phức tạp: Xóa bản ghi với điều kiện phức tạp.
+
+nói chung y chang Eloquent khác mỗi :: và ->

@@ -1,0 +1,161 @@
+các câu lệnh tạo dự án,quy tắt đặt tên,tạo service,model,controler,....
+
+
+php artisan
+-make:model tên(PascalCase): make:model Book
+-make:controller tên(PascalCase) --resource: make:controller BookController --resource
+tạo thư mục con vd api//BookController (2 gạch)
+Điều này sẽ tạo ra một controller với các phương thức RESTful mặc định (index, create, store, show, edit, update, destroy).
+-make:migration tên(snakecase) --table=tên table:  make:migration create_books_table --table=books
+Laravel tự động xác định tên bảng từ tên file migration khi sử dụng 
+các tiền tố như create_, add_, update_, delete_.
+
+tạo bảng Schema::create
+sửa bảng Schema::table
+
+nên nhớ trong hàm down luôn luôn xóa ràng buộc trước khi xóa cột
+-----------------------------
+tạo service trong app/Services
+vd:<?php
+
+namespace App\Services;
+
+class ExampleService
+{
+    public function performAction()
+    {
+        // Logic của service
+        return "Service is working!";
+    }
+}
+
+đăng kí service trong appserviceprovider
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use App\Services\ExampleService;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        $this->app->singleton(ExampleService::class, function ($app) {
+            return new ExampleService();
+            //ví dụ logic giỏ hàng nên dk singlton
+        });
+        ngoài singleton còn bind,scope,instance,...
+        nếu không đăng kí thì mình tiêm phụ thuộc thủ công thì mặc
+        định sẽ là bind(tạo mới instance mỗi khi inject)
+    }
+
+    public function boot()
+    {
+        //đk sự kiện,observale,...
+    }
+}
+----------------------------------------------
+obsservale
+tạo php artisan make:observer ProductObserver --model=Product
+Mở file app/Observers/ProductObserver.php và định nghĩa các sự kiện mà bạn muốn theo dõi và phản ứng.
+<?php
+
+namespace App\Observers;
+
+use App\Models\Product;
+
+class ProductObserver
+{
+    /**
+     * Handle the Product "created" event.
+     *
+     * @param  \App\Models\Product  $product
+     * @return void
+     */
+    public function created(Product $product)
+    {
+        // Xử lý khi sản phẩm được tạo mới
+        // Ví dụ: Gửi thông báo, log lại sự kiện, ...
+    }
+
+    /**
+     * Handle the Product "updated" event.
+     *
+     * @param  \App\Models\Product  $product
+     * @return void
+     */
+    public function updated(Product $product)
+    {
+        // Xử lý khi sản phẩm được cập nhật
+        // Ví dụ: Cập nhật các thông tin liên quan, ...
+    }
+
+    /**
+     * Handle the Product "deleted" event.
+     *
+     * @param  \App\Models\Product  $product
+     * @return void
+     */
+    public function deleted(Product $product)
+    {
+        // Xử lý khi sản phẩm bị xóa
+        // Ví dụ: Ghi log, cập nhật trạng thái, ...
+    }
+}
+
+Đăng ký trong AppServiceProvider:
+Mở file app/Providers/AppServiceProvider.php và thêm đoạn mã sau trong phương thức boot:
+public function boot()
+{
+    Product::observe(ProductObserver::class);
+} và
+Đăng ký trong constructor của Model Product:
+use App\Observers\ProductObserver;
+
+protected static function boot()
+{
+    parent::boot();
+
+    Product::observe(ProductObserver::class);
+}
+-----------------------------------
+php artisan make:request StoreRequest
+php artisan make:request UpdateRequest
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreRequest extends FormRequest
+{
+    // Phương thức này xác định người dùng có quyền thực hiện yêu cầu hay không
+    public function authorize()
+    {
+        return true;
+    }
+
+    // Phương thức này chứa các quy tắc xác thực
+    public function rules()
+    {
+        return [
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+        ];
+    }
+
+    // Phương thức này chứa các thông báo lỗi tùy chỉnh
+    public function messages()
+    {
+        return [
+            'name.required' => 'The name field is required.',
+            'name.max' => 'The name may not be greater than :max characters.',
+            'email.required' => 'We need to know your email address!',
+            'email.email' => 'Please provide a valid email address!',
+            'email.unique' => 'This email address is already taken.',
+            'password.required' => 'A password is required.',
+            'password.min' => 'The password must be at least :min characters.',
+            'password.confirmed' => 'The password confirmation does not match.',
+        ];
+    }
+}

@@ -1,0 +1,8 @@
+Tương thích giao diện: Adapter Pattern cho phép các lớp có giao diện khác
+ nhau làm việc cùng nhau mà không cần sửa đổi mã nguồn của chúng.
+
+
+
+ nói chung là khi cần thay thế cái cũ thành cái mới(nó cùng chức năng nhưng khác tên phương thức)
+ thì dùng
+ Adapter là bộ chuyển đổi đó

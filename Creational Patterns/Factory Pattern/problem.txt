@@ -1,0 +1,21 @@
+Hãy giải thích cho tôi về factory pattern,nếu không có factory design 
+pattern thì tôi sẽ gặp những vấn đề gì?nó giải quyết được vấn đề gì? 
+lấy ví dụ.
+
+Vấn đề khi không có Factory Pattern.
+-khi khởi tạo đối tượng bằng từ khóa 'new' thì có nghĩa là mình khởi tạo 
+đối tượng dưa trên lớp cụ thể, khi muốn thay đổi thì khó vì nó là hard code.
+-Không tuân thủ nguyên tắc Single Responsibility:
+Một lớp chịu trách nhiệm khởi tạo đối tượng và đồng thời thực hiện các chức
+năng khác có thể vi phạm nguyên tắc Single Responsibility (mỗi lớp chỉ nên
+có một trách nhiệm duy nhất).
+
+
+Tác dụng của Factory Pattern
+-Thay vì trực tiếp khởi tạo đối tượng bằng new, bạn sử dụng một phương thức 
+của lớp Factory để tạo ra đối tượng.Điều này giúp giảm sự phụ thuộc vào 
+các lớp cụ thể.
+
+
+hiểu nó giống như một function nhận vào tên class để tạo đối tượng đi.
+ứng dụng thực tế:

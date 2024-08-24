@@ -1,0 +1,200 @@
+=>theo mình hiểu là taojra các class dựa trên 1 interface để các class này
+ có thể tạo đối tượng dựa trên đối tượng của các class khác
+dạng như mỗi class sẽ thểm 1 thuộc tính cho đối tượng(trang trí)
+nói chung khá giống dạng method chain nhưng method chain thì phải thêm thuộc tính đó trực tiếp vào mã nguồn
+sử dụng decorator để tránh việc sửa mã nguồn.
+
+Decorator Pattern là một thiết kế thuộc nhóm Structural Patterns. Nó cho phép bạn thêm các hành vi hoặc tính năng bổ sung cho các đối tượng một cách linh hoạt mà không thay đổi cấu trúc ban đầu của lớp. Decorator Pattern thường được sử dụng khi bạn cần mở rộng chức năng của đối tượng mà không làm ảnh hưởng đến các lớp khác.
+
+Giới Thiệu về Decorator Pattern
+Mục Đích
+Mở rộng chức năng của đối tượng: Cho phép thêm các tính năng bổ sung vào đối tượng mà không cần thay đổi lớp cơ bản.
+Tuân thủ nguyên tắc mở-đóng (Open-Closed Principle): Đối tượng có thể mở rộng tính năng mà không thay đổi mã nguồn của lớp ban đầu.
+Tính linh hoạt: Cho phép kết hợp nhiều decorator để tạo ra các biến thể đối tượng khác nhau một cách dễ dàng.
+Không có Decorator Pattern: Các Vấn Đề Có Thể Gặp Phải
+Phải thay đổi lớp cơ bản: Khi cần thêm chức năng mới, bạn phải sửa đổi lớp cơ bản, điều này có thể ảnh hưởng đến tất cả các đối tượng hiện có và các lớp dẫn xuất.
+Tạo ra các lớp con không cần thiết: Để thêm các tính năng mới, bạn có thể cần tạo nhiều lớp con cho mỗi tính năng, dẫn đến sự phình to của hệ thống lớp.
+Thiếu linh hoạt: Khó kết hợp các tính năng mới một cách linh hoạt, đặc biệt khi cần thêm nhiều tính năng vào đối tượng.
+Cách Hoạt Động
+Decorator Pattern hoạt động bằng cách:
+
+Định nghĩa một giao diện chung: Cho cả đối tượng ban đầu và các decorator.
+Triển khai decorator: Mỗi decorator có thể thêm hoặc thay đổi hành vi của đối tượng bằng cách bọc đối tượng gốc.
+Ví Dụ: Trang Trí Văn Bản với Decorator Pattern
+Không Sử Dụng Decorator Pattern
+Giả sử chúng ta có một lớp để hiển thị văn bản và cần thêm các tính năng như in đậm, in nghiêng, và gạch chân. Nếu không sử dụng Decorator Pattern, chúng ta phải sửa đổi hoặc tạo các lớp con khác nhau cho từng tính năng:
+
+php
+Sao chép mã
+<?php
+class Text {
+    private $content;
+
+    public function __construct($content) {
+        $this->content = $content;
+    }
+
+    public function render() {
+        return $this->content;
+    }
+}
+
+// Thêm các tính năng bằng cách sửa đổi lớp cơ bản hoặc tạo các lớp con
+class BoldText extends Text {
+    public function render() {
+        return '<b>' . parent::render() . '</b>';
+    }
+}
+
+class ItalicText extends Text {
+    public function render() {
+        return '<i>' . parent::render() . '</i>';
+    }
+}
+
+// Sử dụng các lớp con
+$text = new BoldText("Hello, World!");
+echo $text->render(); // <b>Hello, World!</b>
+
+$text = new ItalicText("Hello, World!");
+echo $text->render(); // <i>Hello, World!</i>
+?>
+Vấn Đề:
+Phải tạo nhiều lớp con: Để hỗ trợ các kết hợp khác nhau như in đậm và in nghiêng, bạn phải tạo thêm nhiều lớp con, dẫn đến khó bảo trì.
+Khó kết hợp: Không dễ để kết hợp các tính năng như in đậm và in nghiêng trong cùng một đối tượng mà không tạo thêm lớp con mới.
+Sử Dụng Decorator Pattern
+Chúng ta có thể cải thiện bằng cách sử dụng Decorator Pattern để trang trí văn bản với các tính năng như in đậm, in nghiêng, và gạch chân mà không phải thay đổi lớp cơ bản:
+
+php
+Sao chép mã
+<?php
+// Giao diện chung cho Text và Decorator
+interface TextInterface {
+    public function render();
+}
+
+// Lớp Text cơ bản
+class Text implements TextInterface {
+    private $content;
+
+    public function __construct($content) {
+        $this->content = $content;
+    }
+
+    public function render() {
+        return $this->content;
+    }
+}
+
+// Lớp Decorator cơ bản
+abstract class TextDecorator implements TextInterface {
+    protected $text;
+
+    public function __construct(TextInterface $text) {
+        $this->text = $text;
+    }
+}
+
+// Decorator cho in đậm
+class BoldDecorator extends TextDecorator {
+    public function render() {
+        return '<b>' . $this->text->render() . '</b>';
+    }
+}
+
+// Decorator cho in nghiêng
+class ItalicDecorator extends TextDecorator {
+    public function render() {
+        return '<i>' . $this->text->render() . '</i>';
+    }
+}
+
+// Decorator cho gạch chân
+class UnderlineDecorator extends TextDecorator {
+    public function render() {
+        return '<u>' . $this->text->render() . '</u>';
+    }
+}
+
+// Sử dụng các decorator
+$text = new Text("Hello, World!");
+$boldText = new BoldDecorator($text);
+$italicText = new ItalicDecorator($boldText);
+$underlinedText = new UnderlineDecorator($italicText);
+
+echo $underlinedText->render(); // <u><i><b>Hello, World!</b></i></u>
+?>
+Lợi Ích:
+Tăng tính linh hoạt: Bạn có thể dễ dàng thêm hoặc loại bỏ các tính năng mà không cần thay đổi lớp cơ bản.
+Dễ dàng kết hợp: Bạn có thể kết hợp các decorator để tạo ra các biến thể đối tượng khác nhau một cách linh hoạt.
+Tuân thủ nguyên tắc mở-đóng: Các tính năng mới có thể được thêm vào thông qua các decorator mà không cần thay đổi mã nguồn của lớp cơ bản.
+Giải Thích Từng Dòng
+Giao Diện TextInterface
+interface TextInterface { ... }:
+
+Định nghĩa giao diện chung cho các lớp Text và các decorator.
+public function render();:
+
+Phương thức mà tất cả các lớp phải triển khai, trả về chuỗi đã được trang trí.
+Lớp Cơ Bản Text
+class Text implements TextInterface { ... }:
+
+Lớp cơ bản cho văn bản, triển khai TextInterface.
+private $content;:
+
+Thuộc tính để lưu trữ nội dung văn bản.
+public function __construct($content) { ... }:
+
+Khởi tạo đối tượng với nội dung văn bản.
+public function render() { ... }:
+
+Trả về nội dung văn bản.
+Lớp Decorator Cơ Bản TextDecorator
+abstract class TextDecorator implements TextInterface { ... }:
+
+Lớp cơ bản cho tất cả các decorator, triển khai TextInterface.
+protected $text;:
+
+Thuộc tính để lưu trữ đối tượng văn bản mà decorator sẽ trang trí.
+public function __construct(TextInterface $text) { ... }:
+
+Khởi tạo đối tượng với đối tượng văn bản cần trang trí.
+Decorator BoldDecorator
+class BoldDecorator extends TextDecorator { ... }:
+
+Lớp decorator để thêm tính năng in đậm cho văn bản.
+public function render() { ... }:
+
+Trang trí văn bản với thẻ <b> để in đậm.
+Decorator ItalicDecorator
+class ItalicDecorator extends TextDecorator { ... }:
+
+Lớp decorator để thêm tính năng in nghiêng cho văn bản.
+public function render() { ... }:
+
+Trang trí văn bản với thẻ <i> để in nghiêng.
+Decorator UnderlineDecorator
+class UnderlineDecorator extends TextDecorator { ... }:
+
+Lớp decorator để thêm tính năng gạch chân cho văn bản.
+public function render() { ... }:
+
+Trang trí văn bản với thẻ <u> để gạch chân.
+Sử Dụng Decorator
+$text = new Text("Hello, World!");:
+
+Tạo đối tượng văn bản ban đầu.
+$boldText = new BoldDecorator($text);:
+
+Thêm tính năng in đậm cho văn bản.
+$italicText = new ItalicDecorator($boldText);:
+
+Thêm tính năng in nghiêng cho văn bản đã in đậm.
+$underlinedText = new UnderlineDecorator($italicText);:
+
+Thêm tính năng gạch chân cho văn bản đã in đậm và in nghiêng.
+echo $underlinedText->render();:
+
+Hiển thị văn bản đã được trang trí với tất cả các tính năng.
+Kết Luận
+Decorator Pattern giúp thêm các tính năng bổ sung cho đối tượng một cách linh hoạt mà không làm thay đổi mã nguồn của lớp cơ bản. Điều này giúp tuân thủ nguyên tắc mở-đóng, tăng khả năng mở rộng và bảo trì mã nguồn. Decorator Pattern đặc biệt hữu ích trong các tình huống cần thêm nhiều tính năng khác nhau cho đối tượng mà không muốn tạo ra một hệ thống lớp con phức tạp.

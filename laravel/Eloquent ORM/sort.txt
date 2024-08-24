@@ -1,0 +1,141 @@
+1. Sử dụng orderBy()
+Sắp xếp record theo một cột cụ thể theo thứ tự tăng hoặc giảm dần.
+
+php
+Sao chép mã
+$users = User::orderBy('name')->get(); // Sắp xếp theo tên, mặc định là tăng dần
+
+$users = User::orderBy('name', 'desc')->get(); // Sắp xếp theo tên giảm dần
+2. Sử dụng latest() và oldest()
+Sắp xếp record theo cột created_at hoặc cột timestamp khác, tăng hoặc giảm dần.
+
+php
+Sao chép mã
+$latestUsers = User::latest()->get(); // Sắp xếp theo cột `created_at` giảm dần
+
+$oldestUsers = User::oldest()->get(); // Sắp xếp theo cột `created_at` tăng dần
+3. Sắp xếp theo nhiều cột
+Sắp xếp theo nhiều cột với các thứ tự khác nhau.
+
+php
+Sao chép mã
+$users = User::orderBy('status', 'asc')->orderBy('name', 'desc')->get();
+// Sắp xếp theo `status` tăng dần, sau đó theo `name` giảm dần
+4. Sử dụng inRandomOrder()
+Sắp xếp record theo thứ tự ngẫu nhiên.
+
+php
+Sao chép mã
+$users = User::inRandomOrder()->get();
+5. Sử dụng reorder()
+Sắp xếp lại record mà bỏ qua các sắp xếp trước đó.
+
+php
+Sao chép mã
+$users = User::orderBy('name')->reorder('email', 'desc')->get(); 
+// Bỏ qua `orderBy('name')` và sắp xếp lại theo `email` giảm dần
+6. Sắp xếp theo quan hệ
+Sắp xếp record dựa trên một cột từ bảng liên quan.
+
+php
+Sao chép mã
+$users = User::with('profile')->orderBy('profile.age', 'desc')->get(); 
+// Sắp xếp `users` dựa trên tuổi trong bảng `profile`
+7. Sử dụng orderByRaw()
+Sắp xếp bằng cách sử dụng biểu thức SQL tùy chỉnh.
+
+php
+Sao chép mã
+$users = User::orderByRaw('LENGTH(name) asc')->get(); // Sắp xếp theo độ dài của `name`
+8. Sử dụng scope trong Eloquent
+Tạo một phương thức scope để sắp xếp.
+
+php
+Sao chép mã
+// Trong model User
+public function scopeOrderByName($query)
+{
+    return $query->orderBy('name');
+}
+
+// Sử dụng
+$users = User::orderByName()->get();
+9. Sử dụng withCount()
+Sắp xếp record theo số lượng bản ghi liên quan.
+
+php
+Sao chép mã
+$users = User::withCount('posts')->orderBy('posts_count', 'desc')->get();
+// Sắp xếp `users` theo số lượng `posts` giảm dần
+Query Builder
+1. Sử dụng orderBy()
+Sắp xếp record theo một cột cụ thể.
+
+php
+Sao chép mã
+$users = DB::table('users')->orderBy('name')->get(); // Sắp xếp theo `name` tăng dần
+
+$users = DB::table('users')->orderBy('name', 'desc')->get(); // Sắp xếp theo `name` giảm dần
+2. Sử dụng latest() và oldest()
+Sắp xếp theo cột created_at hoặc timestamp khác.
+
+php
+Sao chép mã
+$latestUsers = DB::table('users')->latest()->get(); // Sắp xếp theo `created_at` giảm dần
+
+$oldestUsers = DB::table('users')->oldest()->get(); // Sắp xếp theo `created_at` tăng dần
+3. Sắp xếp theo nhiều cột
+Sắp xếp theo nhiều cột với các thứ tự khác nhau.
+
+php
+Sao chép mã
+$users = DB::table('users')->orderBy('status', 'asc')->orderBy('name', 'desc')->get();
+// Sắp xếp theo `status` tăng dần, sau đó theo `name` giảm dần
+4. Sử dụng inRandomOrder()
+Sắp xếp theo thứ tự ngẫu nhiên.
+
+php
+Sao chép mã
+$users = DB::table('users')->inRandomOrder()->get();
+5. Sử dụng orderByRaw()
+Sắp xếp bằng biểu thức SQL tùy chỉnh.
+
+php
+Sao chép mã
+$users = DB::table('users')->orderByRaw('LENGTH(name) asc')->get(); // Sắp xếp theo độ dài của `name`
+6. Sử dụng orderByDesc()
+Sắp xếp theo thứ tự giảm dần của một cột cụ thể.
+
+php
+Sao chép mã
+$users = DB::table('users')->orderByDesc('age')->get();
+7. Sử dụng orderByDesc với nhiều điều kiện
+Sắp xếp theo thứ tự giảm dần của một cột với nhiều điều kiện khác nhau.
+
+php
+Sao chép mã
+$users = DB::table('users')->orderBy('status', 'asc')->orderByDesc('created_at')->get();
+8. Sử dụng orderByPivot()
+Sắp xếp theo một cột trong bảng trung gian của quan hệ nhiều-nhiều.
+
+php
+Sao chép mã
+// Giả sử có bảng `user_role` chứa cột `assigned_at`
+$users = DB::table('users')
+    ->join('user_role', 'users.id', '=', 'user_role.user_id')
+    ->orderBy('user_role.assigned_at', 'desc')
+    ->select('users.*')
+    ->get();
+9. Sắp xếp trong các truy vấn con
+Sử dụng sắp xếp trong truy vấn con để tổ chức lại dữ liệu trước khi truy vấn chính.
+
+php
+Sao chép mã
+$users = DB::table('users')
+    ->whereIn('id', function($query) {
+        $query->select('user_id')
+              ->from('orders')
+              ->orderBy('created_at', 'desc')
+              ->limit(10);
+    })
+    ->get();

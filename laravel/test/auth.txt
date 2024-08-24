@@ -1,0 +1,123 @@
+Tạo phương thức đăng nhập và lấy token tự động
+Bạn có thể tạo một phương thức trong lớp kiểm thử của mình để đăng nhập và lấy token xác thực. Ví dụ:
+protected function authenticate()
+{
+    $user = User::factory()->create([
+        'email' => 'user@example.com',
+        'password' => bcrypt('password')
+    ]);
+
+    $response = $this->postJson('/api/login', [
+        'email' => $user->email,
+        'password' => 'password'
+    ]);
+
+    $token = $response->json('token');
+
+    $this->withHeader('Authorization', 'Bearer ' . $token);
+
+    return $user;
+}
+Sử dụng phương thức authenticate trong kiểm thử
+public function testUserCanUpdateOwnPost()
+{
+    $user = $this->authenticate();
+    $post = Post::factory()->create(['user_id' => $user->id]);
+
+    $this->putJson("/api/posts/{$post->id}", [
+        'title' => 'Updated Title',
+        'content' => 'Updated Content'
+    ])
+    ->assertStatus(200)
+    ->assertJson([
+        'title' => 'Updated Title',
+        'content' => 'Updated Content'
+    ]);
+}
+
+public function testUserCannotUpdateOthersPost()
+{
+    $user = $this->authenticate();
+    $post = Post::factory()->create();
+
+    $this->putJson("/api/posts/{$post->id}", [
+        'title' => 'Updated Title',
+        'content' => 'Updated Content'
+    ])
+    ->assertStatus(403);
+}
+Hoàn chỉnh kiểm thử tự động với Laravel Passport hoặc Sanctum
+Laravel Sanctum
+Trong tests/TestCase.php, thêm đoạn mã sau để cấu hình Sanctum:
+use Laravel\Sanctum\Sanctum;
+
+public function setUp(): void
+{
+    parent::setUp();
+
+    Sanctum::actingAs(
+        User::factory()->create(),
+        ['*']
+    );
+}
+Trong tests/TestCase.php, thêm đoạn mã sau để cấu hình Passport:
+use Laravel\Passport\Passport;
+
+public function setUp(): void
+{
+    parent::setUp();
+
+    Passport::actingAs(
+        User::factory()->create(),
+        ['*']
+    );
+}
+************************************************************************************
+Passport::actingAs(User::factory()->create(), ['*']);:
+Tạo một người dùng mới và giả lập người dùng này đang đăng nhập với
+tất cả các quyền (['*']). Điều này cho phép bạn thực hiện các
+yêu cầu API với người dùng đã xác thực mà không cần phải trải 
+qua quá trình đăng nhập thực sự trong mỗi bài kiểm thử.
+************************************************************************************
+
+Ví dụ hoàn chỉnh với Laravel Sanctum
+use Laravel\Sanctum\Sanctum;
+use App\Models\User;
+use App\Models\Post;
+
+class PostTest extends TestCase
+{
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = User::factory()->create();
+        Sanctum::actingAs($this->user);
+    }
+
+    public function testUserCanUpdateOwnPost()
+    {
+        $post = Post::factory()->create(['user_id' => $this->user->id]);
+
+        $this->putJson("/api/posts/{$post->id}", [
+            'title' => 'Updated Title',
+            'content' => 'Updated Content'
+        ])
+        ->assertStatus(200)
+        ->assertJson([
+            'title' => 'Updated Title',
+            'content' => 'Updated Content'
+        ]);
+    }
+
+    public function testUserCannotUpdateOthersPost()
+    {
+        $post = Post::factory()->create();
+
+        $this->putJson("/api/posts/{$post->id}", [
+            'title' => 'Updated Title',
+            'content' => 'Updated Content'
+        ])
+        ->assertStatus(403);
+    }
+}

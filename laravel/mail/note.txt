@@ -1,0 +1,49 @@
+1. mở file env để cấu hình
+
+2. tạo mail class
+php artisan make:mail OrderShipped
+
+3. định nghĩa file mail
+class OrderShipped extends Mailable
+{
+    use Queueable, SerializesModels;
+
+    public $order;
+
+    /**
+     * Create a new message instance.
+     *
+     * @return void
+     */
+    public function __construct($order)
+    {
+        $this->order = $order;
+    }
+
+    /**
+     * Build the message.
+     *
+     * @return $this
+     */
+    public function build()
+    {
+        return $this->view('emails.orders.shipped')
+                    ->with([
+                        'orderName' => $this->order->name,
+                        'orderPrice' => $this->order->price,
+                    ]);
+    }
+}
+4.
+ Tạo Email Template
+Tạo view cho email tại resources/views/emails/orders/shipped.blade.php
+
+
+Bước 5: Gửi Email
+Gửi email từ controller hoặc bất cứ nơi nào trong ứng dụng:
+$order = [
+    'name' => 'Sample Order',
+    'price' => 100
+];
+
+Mail::to('customer@example.com')->send(new OrderShipped((object) $order));
